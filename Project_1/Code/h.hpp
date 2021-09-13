@@ -1,4 +1,5 @@
 #include <iostream>
+#include <armadillo>
 
 void function()
 {
