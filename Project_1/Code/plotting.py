@@ -1,5 +1,9 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
 #Using numpy.loadtxt to copy the values from the file. Skipping the first row.
 #this is a very simplistic program as i didn't have time to make higher quality
+
 data = np.loadtxt("data.txt",skiprows=1)
 
 x = np.zeros(len(data))
