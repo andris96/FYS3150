@@ -1,0 +1,145 @@
+\documentclass[english,notitlepage]{revtex4-1}  
+
+\usepackage[utf8]{inputenc}
+\usepackage{physics,amssymb}  
+\include{amsmath}
+\usepackage{graphicx}         
+\usepackage{xcolor}           
+\usepackage{hyperref}         
+\usepackage{listings}         
+\usepackage{subfigure}        
+\usepackage{float}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{subfigure}
+\usepackage{tikz}
+\usetikzlibrary{quantikz}
+
+\hypersetup{ 
+	colorlinks,
+	linkcolor={red!50!black},
+	citecolor={blue!50!black},
+	urlcolor={blue!80!black}}
+
+
+\begin{document}
+	
+	\title{FYS3150 Project 1}      
+	\author{Andreas Isene}         
+	\date{\today}                             
+	\noaffiliation                          
+	
+	
+	\maketitle 
+	
+	https://github.com/andris96/FYS3150
+	
+	\section*{Problem 1}
+	The second order differential equation is given as:
+		$$\gamma \frac{d^2u}{dx^2} = -Fu$$
+
+	
+	To scale the equation we use: $\hat{x} = x/L$, in order to implement this we need to find out what $\frac{d^2}{dx^2}$ is in terms of $\hat{x}$. We start with the first derivative:
+	
+	$$\frac{d}{dx} = \frac{d\hat{x}}{dx}\frac{d}{d\hat{x}} = \frac{1}{L}\frac{d}{d\hat{x}}$$
+	
+	Then squaring this gives:
+	
+	$$\frac{d^2}{dx^2} = \frac{1}{L^2}\frac{d^2}{d\hat{x}^2}$$
+	
+	Putting this back into eq. \ref{eq1} and defining $\lambda \equiv \frac{FL^2}{\gamma}$ we can finally arrive at the desired result:
+	
+	$$ \frac{\gamma}{L^2} \frac{d^2u}{d\hat{x}^2} = -Fu \rightarrow \frac{d^2u}{d\hat{x}^2} = -\lambda u$$
+	
+	
+	\section*{Problem 2}
+	To show that U preserves orthonormality we must show that $ \vec{w}_i^T\vec{w}_j = \delta_{ij}$. This can easily be shown by using a property of transposition. We know that $(AB)^T = B^T A^T$ which gives us: 
+
+	$$ \vec{w}_i^T\vec{w}_j = (U\vec{v}_i)^T U\vec{v}_j = \vec{v}_i^T U^T U \vec{v}_j = \vec{v}_j^TI\vec{v}_i = \delta_{ij}$$ 
+
+	
+	\section*{Problem 3}
+	
+	Figure \ref{fig:problem3} is a screenshot from the output of the program which is called problem3\textunderscore main.exe. The solutions from the analytical calculation seems to agree with the solutions given by eig\textunderscore sym. The vectors are in opposite direction, but that does not matter as eigenvectors can be scaled with a constant c and still have the same properties.
+	
+	\begin{figure}[H]
+		\centering 
+		\includegraphics[scale=0.55]{problem3_output.pdf}
+		\caption{Output from the program problem3\textunderscore main.exe}
+		\label{fig:problem3}
+	\end{figure}
+
+	
+	\section*{problem 4}
+	
+	Figure \ref{fig:problem4} is a screenshot from the output of the program problem4\textunderscore main.exe. It seems to correctly identify the element with the highest absolute value, and also gives the correct indices (starting from 0). Since it is a symmetric matrix we only need to consider the upper triangle. 
+	
+	\begin{figure}[H]
+		\centering 
+		\includegraphics[scale=0.55]{problem4_output.pdf}
+		\caption{Output from the program problem4\textunderscore main.exe}
+		\label{fig:problem4}
+	\end{figure}
+	
+	
+
+	\section*{problem 5}
+	
+	Figure \ref{fig:problem5} is a screenshot from the output of the program problem5\textunderscore main.exe. As we can see, the result is the same as the previous results from problem 3. 
+	
+	\begin{figure}[H]
+		\centering 
+		\includegraphics[scale=0.55]{problem5_output.pdf}
+		\caption{Output from the program problem5\textunderscore main.exe}
+		\label{fig:problem5}
+	\end{figure}
+
+	\section*{problem 6}
+
+	Figure \ref{fig:problem6.pdf} is a screenshot from the output of the program problem6\textunderscore main.exe it shows the number of iterations as N goes from 10 to 70 with an increment of 5 each time. Figure \ref{fig:iteration} shows a plot of the values, with a $x^2$ curve for comparison. It seems like the scaling is of order $N^2$, but it could be important to let N increase even further to see what happens. 
+	
+	As for the case where A is a dense matrix I assume that there would not be much difference in the scaling behaviour, since every time the tridiagonal matrix is rotated other elements which are 0 becomes non-zero. Which is also why we need to have an epsilon to make sure they are close enough to zero. In other words, after quite few iterations the tridiagonal matrix will be transformed into a dense matrix.
+
+	\begin{figure}[H]
+		\centering 
+		\includegraphics[scale=0.55]{problem6_output.pdf}
+		\caption{Output from the program problem6\textunderscore main.exe}
+		\label{fig:problem6.pdf}
+	\end{figure}
+
+	\begin{figure}[H]
+		\centering 
+		\includegraphics[scale=0.55]{iterations_plot.pdf}
+		\caption{Plot shows how many iterations and therefore how many rotation transformations are needed to solve the differential equation. The orange line is a plot of $x^2$ to compare.}
+		\label{fig:iteration}
+	\end{figure}
+
+	\section*{problem 7}
+	
+	Figure \ref{fig:eigenvec10} and \ref{fig:eigenvec100} show the eigenvectors with n = 10 and n = 100 respectively. We can see that the third eigenvector is showing opposite values as the analytical one, which is just due to the fact that the normalization does not account for the sign of the vector. As we can se, with increasing n the values from the Jacobi's rotations becomes more similar to the analytical ones. 
+	
+	\begin{figure}[H]
+		\centering 
+		\includegraphics[scale=0.55]{eigenvec10.pdf}
+		\caption{Plot shows the three lowest eigenvectors as a function of $x_i$ with n = 10}
+		\label{fig:eigenvec10}
+	\end{figure}
+
+	\begin{figure}[H]
+		\centering 
+		\includegraphics[scale=0.55]{eigenvec100.pdf}
+		\caption{Plot shows the three lowest eigenvectors as a function of $x_i$ with n = 100}
+		\label{fig:eigenvec100}
+	\end{figure}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+\end{document}

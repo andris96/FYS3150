@@ -1,7 +1,8 @@
 #include "functions.hpp"
 #include <cmath>
 
-//creates a tridiagonal matrix
+//creates a tridiagonal matrix with l as lower diagonal
+//d as diagonal, and u as upperdiagonal elements.
 arma::mat tridiag_matrix(int N, double l, double d, double u){
 
     //creating an identity matrix A of size NxN,
@@ -25,6 +26,7 @@ arma::mat tridiag_matrix(int N, double l, double d, double u){
 }
 
 //Function calculating the analytical eigenvalues and vectors of a symmetric tridiagonal matrix
+//with d as diagonal and a as lower and upper-diagonal
 void analytical_solution(double a, double d, int N, arma::vec& eigval, arma::mat& eigvec){
     double pi = 2*acos(0.0); //calculating pi
     eigval.set_size(N); //setting the size of the vector and matrix
@@ -44,8 +46,8 @@ void analytical_solution(double a, double d, int N, arma::vec& eigval, arma::mat
 
 }
 
-
-//calculating the largest off-diagonal element in the symmetrical matrix A
+//finds and saves the indicies of the largest off-diagonal element.
+//Returns the value of that element, and stores the indecies in k and l
 double max_offdiag_symmetric(const arma::mat& A, int &k, int &l){
     int N = A.n_rows;
     k = 0;
@@ -70,10 +72,11 @@ double max_offdiag_symmetric(const arma::mat& A, int &k, int &l){
 }
 
 
-// Performs a single Jacobi rotation, to "rotate away"
-// the off-diagonal element at A(k,l).
-// - Assumes symmetric matrix, so we only consider k < l
-// - Modifies the input matrices A and R
+//Function for doing a single jacobi rotation
+//assumes that the input matrix is symmetric
+//Takes the matrix A, which is to be solved
+//Also takes a rotation matrix R as input
+//k and l are the indicies for the largest off-diagonal element
 void jacobi_rotate(arma::mat& A, arma::mat& R, int k, int l){
 
     double tau = (A(l,l) - A(k,k))/(2*A(k,l));
@@ -82,27 +85,28 @@ void jacobi_rotate(arma::mat& A, arma::mat& R, int k, int l){
     double c;
     double s;
 
+    //defining tau
     if(tau > 0){
         t = 1/(tau + sqrt(1 + std::pow(tau,2)));
     }
     else{
-        t = 1/(tau - sqrt(1 + std::pow(tau,2)));
+        t = -1/(-tau + sqrt(1 + std::pow(tau,2)));
     }
 
-    c = 1/(sqrt(1 + std::pow(tau,2)));
+    c = 1/(sqrt(1 + std::pow(t,2)));
     s = c*t;
 
     //transforming matrix elements of A
     double old_akk = A(k,k); //need to save A^{m}_{kk} to not calculate A_{ll} with A^{m+1}_{kk}
     //updating these 4 elements explicitly as they differ from the general rule
-    A(k,k) = A(k,k)*std::pow(c,2) - 2*A(k,l) + A(l,l)*std::pow(s,2);
-    A(l,l) = A(l,l)*std::pow(c,2) + 2*A(k,l) + old_akk*std::pow(s,2);
+    A(k,k) = A(k,k)*std::pow(c,2) - 2*A(k,l)*c*s + A(l,l)*std::pow(s,2);
+    A(l,l) = A(l,l)*std::pow(c,2) + 2*A(k,l)*c*s + old_akk*std::pow(s,2);
     A(k,l) = 0;
     A(l,k) = 0;
 
     //declaring variables for the upcoming for-loop
     int N = A.n_rows;
-    double old_aik; //This is needed for the same reason as old_aik above
+    double old_aik; //This is needed for the same reason as old_akk above
 
     //Updating the rest of the elements in A
     for(int i = 0; i<N; i++){
@@ -111,7 +115,7 @@ void jacobi_rotate(arma::mat& A, arma::mat& R, int k, int l){
             old_aik = A(i,k);
             A(i,k) = A(i,k)*c - A(i,l)*s;
             A(k,i) = A(i,k);
-            A(i,l) = A(i,l)*c + old_aik;
+            A(i,l) = A(i,l)*c + old_aik*s;
             A(l,i) = A(i,l);
         }
     }
@@ -119,44 +123,63 @@ void jacobi_rotate(arma::mat& A, arma::mat& R, int k, int l){
     //updating elements in R
     for(int i = 0; i<N; i++){
         double old_rik = R(i,k);
-        R(i,k) = R(i,k) - R(i,l);
-        R(i,l) = R(i,l) + old_rik;
+        R(i,k) = R(i,k)*c - R(i,l)*s;
+        R(i,l) = R(i,l)*c + old_rik*s;
     }
 }
 
+//This function uses the function jacobi_rotate to rotate matrix A multiple times.
+//The largest off-diagonal element is found by utilizing max_offdiag_symmetric.
+//It takes in matrix A, epsilon which is the limit for how big off-diagonal elements are allowed to be
+//Also takes a vector to place the eigenvalues, and a matrix to place eigenvectors
+//It takes in iterations, which should start at 0, and will change the value for each iteration
+//maxiter is the maximum number of iterations we allow 
+//converged is a variable that will tell us wether or not the maximum number of iterations was reached 
 void jacobi_eigensolver(const arma::mat& A, double eps, arma::vec& eigenvalues, arma::mat& eigenvectors, 
                         const int maxiter, int& iterations, bool& converged){
-    int k;
+    //k and l are defined in the function max_offdiag_symmetric
+    int k; 
     int l;
+    //Making the matrices/vectors which will contain eigenvectors and eigenvalues
     int N = A.n_cols;
     arma::mat A_rotated = A;
     eigenvectors.set_size(N,N);
     eigenvectors = arma::mat(N,N,arma::fill::eye); //R^{1} = I
     eigenvalues.set_size(N);
     
+    //start at 0 iterations
     iterations = 0;
-
-
-    while(max_offdiag_symmetric(A_rotated,k,l) < eps){
-        max_offdiag_symmetric(A_rotated,k,l);
-        //std::cout << k << std::endl;
+    while(std::abs(max_offdiag_symmetric(A_rotated,k,l)) > eps){
+        //rotating once
         jacobi_rotate(A_rotated,eigenvectors,k,l);
+        //increasing the rotation count by one
         iterations++;
-        //std::cout << iterations << std::endl;
+
+        //Breaking the while loop after a certain number of iterations
         if(iterations == maxiter){
-            std::cout << "maximum number of iterations was reached" << std::endl;
+            converged = false;
             break;
-        converged = true;
         }
     }
-
-    A_rotated.print();
-    /*
-    for(int i; i<N; i++){
+     
+    //The eigenvalues are set to the diagonal elements of A after the rotations
+    for(int i = 0; i<N; i++){
         eigenvalues(i) = A_rotated(i,i);
     }
-    */
-    //arma::sort(eigenvectors);
-    //arma::sort(eigenvalues);
+
+    //Ordering the eigenvectors and eigenvalues
+    //only need to look at eigenvalues and put them in ascending order
+    //then the corresponding column vectors can follow the same ordering
+    arma::uvec indicies = arma::sort_index(eigenvalues);
+    //need to store the old matrix to have a referance
+    arma::vec eigenvalues_wrong_order = eigenvalues;
+    arma::mat eigenvectors_wrong_order = eigenvectors;
+
+    //changing the order of eigenvalues and eigenvectors which are column vectors
+    for(int i = 0; i < N; i++){
+        eigenvalues(i) = eigenvalues_wrong_order(indicies(i));
+        eigenvectors.col(i) = eigenvectors_wrong_order.col(indicies(i));
+    }
+    
 
 }
