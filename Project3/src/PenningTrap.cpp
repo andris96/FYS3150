@@ -1,15 +1,13 @@
 #include "PenningTrap.hpp"
-#include "Particle.hpp"
 
 // Constructor
-PenningTrap::PenningTrap(double B0, double V0, double d) {
-    B0_in = B0;
-    V0_in = V0;
-    d_in = d;
+PenningTrap::PenningTrap(double B0_in, double V0_in, double d_in) {
+    B0_ = B0_in;
+    V0_ = V0_in;
+    d_ = d_in;
 
-    k_e = 1.38935333*10e5; // Coulomb constant
-    T = 9.64852558*10e1; // Magnetic field strength, Tesla
-    V = 9.64852558*10e7; // Electric potential, Volt
+    double k_e = 1.38935333*10e5; // Coulomb constant
+
 
     std::vector<Particle> particles;
 }
@@ -27,9 +25,9 @@ arma::vec PenningTrap::external_E_field(arma::vec r) {
     double z = r.at(2);
 
     // Compute the components of the gradient of V at $r
-    double dx = -x*(V0_in/pow(d,2));
-    double dy = -y*(V0_in/pow(d,2));
-    double dz = 2*z*(V0_in/pow(d,2));
+    double dx = -x*(V0_/pow(d_,2));
+    double dy = -y*(V0_/pow(d_,2));
+    double dz = 2*z*(V0_/pow(d_,2));
 
     // Compute the external electric field
     arma::vec E_field = arma::vec(3).fill(0.);
@@ -40,13 +38,13 @@ arma::vec PenningTrap::external_E_field(arma::vec r) {
 // External magnetic field at point r=(x,y,z)
 arma::vec PenningTrap::external_B_field(arma::vec r) {
     arma::vec B_field = arma::vec(3).fill(0.);
-    B_field.at(2) = B0_in;
+    B_field.at(2) = B0_;
     return B_field;
 }
 
 // Force on particle_i from particle_j
 // Assuming the force on p_i from p_j is govnered by the electric force only..
-//  POSSIBLE ERRORS!!!!!
+// POSSIBLE ERRORS!!!!!
 arma::vec PenningTrap::force_particle(int i, int j) {
     double q_i = particles.at(i).q();
     double q_j = particles.at(j).q();
@@ -74,16 +72,21 @@ arma::vec PenningTrap::total_force_external(int i) {
 }
 
 // The total force on particle_i from the other particles
-// POSSIBLE ERRORS!!!!
 arma::vec PenningTrap::total_force_particles(int i) {
-    //assert(particles.size > 1);
+    //No force if there are only 1 particle
+    if (particles.size() < 2){
+        return 0;
+    }
+    else{
     arma::vec total_force = arma::vec(3).fill(0.);
+
     for (int j = 0; j < particles.size(); j++) {
         if (j != i) {
-            total_force += force_particle(i, j); // k_e is baked into this method which gives severeal multiples of k_e..
+            total_force += force_particle(i, j); 
         }
     }
-    return total_force/pow(k_e, particles.size()-1); // fix this!!!! Had to remove multiples of k_e...
+    return total_force;
+    }
 }
 
 // The total force on particle_i from both external fields and other particles
@@ -92,33 +95,38 @@ arma::vec PenningTrap::total_force(int i) {
 }
 
 // Evolve the system one time step (dt) using Runge-Kutta 4th order
-// NOT COMPLETE!!!!
+// MAY NOT BE COMPLETE!!!!
 // POSSIBLE ERRORS!!!!
 void PenningTrap::evolve_RK4(double dt){
-    double k1, k2, k3, k4; 
-    //Introducing a temporary particle to calculate the force when time and velocity has changed
-    Particle pf; //pf = particle to calculate force
+    arma::vec k1, k2, k3, k4; 
+    
     for (int i = 0; i < particles.size(); i++){
-        arma::vec v_i = particles.at(i).v();
+        
+        //Saving variables of particle i
+        Particle particle_i = particles.at(i); 
+        arma::vec v_i = particles.at(i).v(); 
         arma::vec r_i = particles.at(i).r();
         k1 = total_force(i)*dt; //excluding the mass, to lower number of calculations
         
-        pf = particles.at(i); //pf = particle to calculate force
-        pf.v() = v_i + k1/2; //changing v_i to v_i+(1/2)
-        pf.r() = r_i + pf.v()*dt/2; //Changing the position with the new velocity
 
-        k2 = total_force(pf)*dt; //Calculating k2 with the new force
+        particles.at(i).v() = v_i + k1/2; //changing v_i to v_i+(1/2)
+        particles.at(i).r() = r_i + particles.at(i).v()*dt/2; //Changing the position with the new velocity
+
+        k2 = total_force(i)*dt; //Calculating k2 with the new force
         
-        pf.v() = v_i + k2/2;
-        pf.r() = r_i + pf.v()*dt/2;
+        particles.at(i).v() = v_i + k2/2;
+        particles.at(i).r() = r_i + particles.at(i).v()*dt/2;
 
-        k3 = total_force(pf)*dt;
+        k3 = total_force(i)*dt;
 
-        pf.v() = v_i + k3;
-        pf.r() = r_i + pf.v()*dt;
+        particles.at(i).v() = v_i + k3;
+        particles.at(i).r() = r_i + particles.at(i).v()*dt;
 
-        k4 = total_force(pf)*dt;
+        k4 = total_force(i)*dt;
 
+        // we reset the variables of the particle to what it was before we calculated the k's
+        particles.at(i) = particle_i;
+        //taking mass into account here
         particles.at(i).v() = v_i + 1/6 * 1/particles.at(i).m() * (k1 + 2*k2 + 2*k3 + k4);
         particles.at(i).r() = particles.at(i).v()*dt;
     }

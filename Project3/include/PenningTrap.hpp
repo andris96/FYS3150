@@ -11,7 +11,7 @@
 class PenningTrap {
 
     protected:
-    double B0_in, V0_in, d_in;
+    double B0_, V0_, d_;
     double k_e, T, V;
     std::vector<Particle> particles;
     
@@ -40,8 +40,6 @@ class PenningTrap {
     // The total force on particle_i from both external fields and other particles
     arma::vec total_force(int i);
 
-    //#######################
-    // NOT IMPLEMENTED YET
 
     // Evolve the system one time step (dt) using Runge-Kutta 4th order
     void evolve_RK4(double dt);
