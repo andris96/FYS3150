@@ -1,6 +1,14 @@
-#include "Particle.hpp"
+#include "/home/rajmann/FYS3150/Project3/include/Particle.hpp"
 
-//Constructor
+// Constructors
+Particle::Particle()
+{
+    q_ = 1;
+    m_ = 1;
+    r_ = arma::vec(3).fill(0.0);
+    v_ = arma::vec(3).fill(0.0);
+}
+
 Particle::Particle(int q_in, double m_in, arma::vec r_in, arma::vec v_in)
 {
 q_ = q_in;
@@ -9,7 +17,7 @@ r_ = r_in;
 v_ = v_in;
 }
 
-//Methods that returns the variables of the particle
+// Methods that returns the variables of the particle
 // q = charge, m = mass, r = position, v = velocity
 int Particle::q()
 {
