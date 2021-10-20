@@ -2,10 +2,10 @@
 #include "Particle.hpp"
 
 // Constructor
-PenningTrap::PenningTrap(double B0, double V0, double d) {
-    B0_in = B0;
-    V0_in = V0;
-    d_in = d;
+PenningTrap::PenningTrap(double B0_in, double V0_in, double d_in) {
+    B0 = B0_in;
+    V0 = V0_in;
+    d = d_in;
 
     k_e = 1.38935333*10e5; // Coulomb constant
     T = 9.64852558*10e1; // Magnetic field strength, Tesla
@@ -74,16 +74,15 @@ arma::vec PenningTrap::total_force_external(int i) {
 }
 
 // The total force on particle_i from the other particles
-// POSSIBLE ERRORS!!!!
 arma::vec PenningTrap::total_force_particles(int i) {
     //assert(particles.size > 1);
     arma::vec total_force = arma::vec(3).fill(0.);
     for (int j = 0; j < particles.size(); j++) {
         if (j != i) {
-            total_force += force_particle(i, j); // k_e is baked into this method which gives severeal multiples of k_e..
+            total_force += force_particle(i, j);
         }
     }
-    return total_force/pow(k_e, particles.size()-1); // fix this!!!! Had to remove multiples of k_e...
+    return total_force;
 }
 
 // The total force on particle_i from both external fields and other particles

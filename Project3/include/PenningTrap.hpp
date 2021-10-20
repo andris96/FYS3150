@@ -11,7 +11,7 @@
 class PenningTrap {
 
     protected:
-    double B0_in, V0_in, d_in;
+    double B0, V0, d;
     double k_e, T, V;
     std::vector<Particle> particles;
     

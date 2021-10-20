@@ -8,20 +8,19 @@
 
 class Particle {
 
-    
     private:
     //Giving PenningTrap access to variables in Particle
     friend class PenningTrap;
+
     //Declearing variables for charge and mass
     int q_;
     double m_;
     arma::vec r_;
     arma::vec v_;
 
-
     public:
-
-    //constructor
+    //constructors
+    Particle(); // Default, initiates with m=q=1 and r=v=0
     Particle(int c_in, double m_in, arma::vec r_in, arma::vec v_in);
 
     //Methods that returns the variables of the particle
