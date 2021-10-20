@@ -25,10 +25,10 @@ class Particle {
     Particle(int c_in, double m_in, arma::vec r_in, arma::vec v_in);
 
     //Methods that returns the variables of the particle
-    int charge();
-    double mass();
-    arma::vec pos();
-    arma::vec vel();
+    int q();
+    double m();
+    arma::vec r();
+    arma::vec v();
 
 };
 

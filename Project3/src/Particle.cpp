@@ -9,23 +9,24 @@ r_ = r_in;
 v_ = v_in;
 }
 
-    //Methods that returns the variables of the particle
-int Particle::charge()
+//Methods that returns the variables of the particle
+// q = charge, m = mass, r = position, v = velocity
+int Particle::q()
 {
 return q_;
 }
 
-double Particle::mass()
+double Particle::m()
 {
 return m_;
 }
 
-arma::vec Particle::pos()
+arma::vec Particle::r()
 {
 return r_;
 }
 
-arma::vec Particle::vel()
+arma::vec Particle::v()
 {
 return v_;
 }

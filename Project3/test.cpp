@@ -18,7 +18,7 @@ int main()
 
     Particle p1 = Particle(1,2.0,v,r);
 
-    std::cout << "Charge: " << p1.charge() << '\n'
-    << "Mass: " << p1.mass() << '\n' << "Position: " << '\n'
-    << p1.pos() << '\n' << "Velocity: " << '\n' << p1.vel() << std::endl;
+    std::cout << "Charge: " << p1.q() << '\n'
+    << "Mass: " << p1.m() << '\n' << "Position: " << '\n'
+    << p1.r() << '\n' << "Velocity: " << '\n' << p1.v() << std::endl;
 }
