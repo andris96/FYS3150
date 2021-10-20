@@ -39,3 +39,10 @@ arma::vec Particle::v()
 return v_;
 }
 
+// Printing the state of the particle
+void Particle::print_state() {
+    std::cout << "Position: \n";
+    r_.print();
+    std::cout << "Velocity: \n";
+    v_.print();
+}

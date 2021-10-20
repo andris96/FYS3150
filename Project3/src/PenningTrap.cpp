@@ -7,9 +7,21 @@ PenningTrap::PenningTrap(double B0_in, double V0_in, double d_in) {
     d_ = d_in;
 
     double k_e = 1.38935333*10e5; // Coulomb constant
-
-
     std::vector<Particle> particles;
+}
+
+// Getter
+std::vector<Particle> PenningTrap::get_particles() {
+    return particles;
+}
+
+// Print information about the state of the particles
+void PenningTrap::print_states() {
+    for (int i = 0; i < particles.size(); i++) {
+        std::cout << "Particle nr. " << i << std::endl;
+        particles.at(i).print_state();
+        std::cout << "\n";
+    }
 }
 
 // Add a particle to the trap
@@ -74,8 +86,8 @@ arma::vec PenningTrap::total_force_external(int i) {
 // The total force on particle_i from the other particles
 arma::vec PenningTrap::total_force_particles(int i) {
     //No force if there are only 1 particle
-    if (particles.size() < 2){
-        return 0;
+    if (particles.size() < 2) {
+        return arma::vec(3).fill(0);
     }
     else{
     arma::vec total_force = arma::vec(3).fill(0.);
@@ -99,34 +111,27 @@ arma::vec PenningTrap::total_force(int i) {
 // POSSIBLE ERRORS!!!!
 void PenningTrap::evolve_RK4(double dt){
     arma::vec k1, k2, k3, k4; 
-    
     for (int i = 0; i < particles.size(); i++){
         
-        //Saving variables of particle i
-        Particle particle_i = particles.at(i); 
+        // Saving the state of particle i
         arma::vec v_i = particles.at(i).v(); 
         arma::vec r_i = particles.at(i).r();
-        k1 = total_force(i)*dt; //excluding the mass, to lower number of calculations
+
+        k1 = total_force(i)*dt; // Excluding the mass, to lower number of calculations
         
-
-        particles.at(i).v() = v_i + k1/2; //changing v_i to v_i+(1/2)
-        particles.at(i).r() = r_i + particles.at(i).v()*dt/2; //Changing the position with the new velocity
-
-        k2 = total_force(i)*dt; //Calculating k2 with the new force
+        particles.at(i).v() = v_i + k1/2; // Changing v_i to v_i+(1/2)
+        particles.at(i).r() = r_i + particles.at(i).v()*dt/2; // Changing the position with the new velocity
+        k2 = total_force(i)*dt; // Calculating k2 with the new force
         
         particles.at(i).v() = v_i + k2/2;
         particles.at(i).r() = r_i + particles.at(i).v()*dt/2;
-
         k3 = total_force(i)*dt;
 
         particles.at(i).v() = v_i + k3;
         particles.at(i).r() = r_i + particles.at(i).v()*dt;
-
         k4 = total_force(i)*dt;
 
-        // we reset the variables of the particle to what it was before we calculated the k's
-        particles.at(i) = particle_i;
-        //taking mass into account here
+        // Taking mass into account here
         particles.at(i).v() = v_i + 1/6 * 1/particles.at(i).m() * (k1 + 2*k2 + 2*k3 + k4);
         particles.at(i).r() = particles.at(i).v()*dt;
     }
@@ -135,7 +140,7 @@ void PenningTrap::evolve_RK4(double dt){
 // Evolve the system one time step (dt) using Forward Euler
 void PenningTrap::evolve_forward_Euler(double dt){
     for (int i = 0; i < particles.size(); i++){
-        particles.at(i).v() += total_force(i)*dt/particles.at(i).m();
-        particles.at(i).r() += particles.at(i).v()*dt;
+        particles.at(i).v_ += total_force(i)*dt/particles.at(i).m_;
+        particles.at(i).r_ += particles.at(i).v_*dt;
     }
 }

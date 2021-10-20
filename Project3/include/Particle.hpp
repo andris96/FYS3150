@@ -29,6 +29,9 @@ class Particle {
     arma::vec r();
     arma::vec v();
 
+    // Method for printing the position and velocity
+    void print_state();
+
 };
 
 #endif

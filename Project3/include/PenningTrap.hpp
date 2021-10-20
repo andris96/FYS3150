@@ -19,6 +19,12 @@ class PenningTrap {
     // Constructor
     PenningTrap(double B0_in, double V0_in, double d_in);
 
+    // Getter
+    std::vector<Particle> get_particles();
+
+    // Print information about the state of the particles
+    void print_states();
+
     // Add a particle to the trap
     void add_particle(Particle p_in);
 
