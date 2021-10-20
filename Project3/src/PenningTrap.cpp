@@ -114,26 +114,26 @@ void PenningTrap::evolve_RK4(double dt){
     for (int i = 0; i < particles.size(); i++){
         
         // Saving the state of particle i
-        arma::vec v_i = particles.at(i).v(); 
-        arma::vec r_i = particles.at(i).r();
+        arma::vec v_i = particles.at(i).v_; 
+        arma::vec r_i = particles.at(i).r_;
 
         k1 = total_force(i)*dt; // Excluding the mass, to lower number of calculations
         
-        particles.at(i).v() = v_i + k1/2; // Changing v_i to v_i+(1/2)
-        particles.at(i).r() = r_i + particles.at(i).v()*dt/2; // Changing the position with the new velocity
+        particles.at(i).v_ = v_i + k1/2; // Changing v_i to v_i+(1/2)
+        particles.at(i).r_ = r_i + particles.at(i).v_*dt/2; // Changing the position with the new velocity
         k2 = total_force(i)*dt; // Calculating k2 with the new force
         
-        particles.at(i).v() = v_i + k2/2;
-        particles.at(i).r() = r_i + particles.at(i).v()*dt/2;
+        particles.at(i).v_ = v_i + k2/2;
+        particles.at(i).r_ = r_i + particles.at(i).v_*dt/2;
         k3 = total_force(i)*dt;
 
-        particles.at(i).v() = v_i + k3;
-        particles.at(i).r() = r_i + particles.at(i).v()*dt;
+        particles.at(i).v_ = v_i + k3;
+        particles.at(i).r_ = r_i + particles.at(i).v_*dt;
         k4 = total_force(i)*dt;
 
         // Taking mass into account here
-        particles.at(i).v() = v_i + 1/6 * 1/particles.at(i).m() * (k1 + 2*k2 + 2*k3 + k4);
-        particles.at(i).r() = particles.at(i).v()*dt;
+        particles.at(i).v_ = v_i + 1/6 * 1/particles.at(i).m_ * (k1 + 2*k2 + 2*k3 + k4);
+        particles.at(i).r_ = particles.at(i).v_*dt;
     }
 }
 
