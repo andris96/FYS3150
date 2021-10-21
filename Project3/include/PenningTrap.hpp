@@ -26,7 +26,7 @@ class PenningTrap {
     
     // Setters
     void enable_particle_interaction();
-    void disable_particle_interaction()
+    void disable_particle_interaction();
 
     // Print information about the state of the particles
     void print_states();

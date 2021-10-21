@@ -39,7 +39,16 @@ arma::vec Particle::v()
 return v_;
 }
 
-// Printing the state of the particle
+// Methods for changing the position and velocity of a particle
+void Particle::set_r(arma::vec r_in) {
+    r_ = r_in;
+}
+
+void Particle::set_v(arma::vec v_in) {
+    r_ = v_in;
+}
+
+// Method for printing the position and velocity
 void Particle::print_state() {
     std::cout << "Position: \n";
     r_.print();
