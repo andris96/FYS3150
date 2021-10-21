@@ -1,12 +1,14 @@
 #include <iostream>
-#include "/home/rajmann/FYS3150/Project3/include/Particle.hpp"
-#include "/home/rajmann/FYS3150/Project3/include/PenningTrap.hpp"
+#include "Particle.hpp"
+#include "PenningTrap.hpp"
 
 int main()
 {
-    arma::vec v = arma::vec(3).fill(0.0);
-    arma::vec r = arma::vec(3).fill(0.0);
-    Particle p1 = Particle(1, 2.0, v, r);
+    arma::vec v = arma::vec(3).fill(1);
+    arma::vec r = arma::vec(3).fill(1);
+    double m_ca = 40.08; // [u]
+    int q_ca = 1;
+    Particle p1 = Particle(q_ca, m_ca, v, r);
     
     double tmax = 100; //100 micro seconds
     int steps = 100; 
@@ -27,7 +29,7 @@ int main()
     // Evolve the systems for $tmax micro seconds
     for(int i = 0; i < steps; i++){
         trap_euler.evolve_forward_Euler(dt);
-        trap_RK4.evolve_RK4(dt);
+        //trap_RK4.evolve_RK4(dt);
     }
 
     // // Compare the states of the particles in both systems
@@ -36,8 +38,12 @@ int main()
 
     // std::cout << "Trap evolved with RK4 at\n";
     // trap_RK4.print_states();
-    std::cout << "External E.field" << trap_euler.external_E_field(p1.r());
-    std::cout << "Total force" << trap_euler.total_force(0);
+    std::cout << "External E.field:" << '\n' << trap_euler.external_E_field(p1.r());
+    std::cout << "External B.field:" << '\n' << trap_euler.external_B_field(p1.r());
+    std::cout << "Total external forces:" << '\n' << trap_euler.total_force_external(0);
+    std::cout << "Total force from other particles:" << '\n' << trap_euler.total_force_particles(0);
+    std::cout << "Total force:" <<  '\n' << trap_euler.total_force(0);
+    std::cout << "Position of particle after iterations:" <<  '\n' << p1.r();
 
     return 0;   
 }

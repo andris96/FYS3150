@@ -1,4 +1,4 @@
-#include "/home/rajmann/FYS3150/Project3/include/Particle.hpp"
+#include "Particle.hpp"
 
 // Constructors
 Particle::Particle()

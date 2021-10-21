@@ -58,6 +58,10 @@ arma::vec PenningTrap::external_B_field(arma::vec r) {
 // Assuming the force on p_i from p_j is govnered by the electric force only..
 // POSSIBLE ERRORS!!!!!
 arma::vec PenningTrap::force_particle(int i, int j) {
+    if (particles.size() < 2) {
+        return arma::vec(3).fill(0);
+    }
+    else{
     double q_i = particles.at(i).q();
     double q_j = particles.at(j).q();
     arma::vec r_i = particles.at(i).r();
@@ -66,6 +70,7 @@ arma::vec PenningTrap::force_particle(int i, int j) {
     arma::vec force = arma::vec(3).fill(0.);
     force = k_e*q_i*q_j*(r_i - r_j)/(pow(arma::abs(r_i - r_j), 3));
     return force;
+    }
 }
 
 // The total force on particle_i from the external fields
@@ -85,7 +90,7 @@ arma::vec PenningTrap::total_force_external(int i) {
 
 // The total force on particle_i from the other particles
 arma::vec PenningTrap::total_force_particles(int i) {
-    //No force if there are only 1 particle
+    //No force if there is only 1 particle
     if (particles.size() < 2) {
         return arma::vec(3).fill(0);
     }
