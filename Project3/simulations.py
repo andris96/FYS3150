@@ -1,7 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-z = np.loadtxt("motion_z.txt")
+
+
+z = np.loadtxt("motion_z_RK4.txt")
 t = np.loadtxt("time_interval.txt")
 
 

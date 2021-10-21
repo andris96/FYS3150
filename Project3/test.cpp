@@ -2,7 +2,6 @@
 #include "Particle.hpp"
 #include "PenningTrap.hpp"
 
-
 int main()
 {
     int q_ca = 1;
@@ -10,7 +9,7 @@ int main()
     arma::vec v = arma::vec(3);
     arma::vec r = arma::vec(3);
     v << 1 << 0 << 0;
-    r << 1 << 1 << 0;
+    r << 1 << 1 << 1;
     Particle p1 = Particle(q_ca, m_ca, r, v);
     
     double tmax = 100; //100 micro seconds

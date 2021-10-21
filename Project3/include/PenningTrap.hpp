@@ -13,14 +13,20 @@ class PenningTrap {
     protected:
     double B0_, V0_, d_;
     double k_e, T, V;
+    bool particle_interaction_;
     std::vector<Particle> particles;
     
     public:
     // Constructor
     PenningTrap(double B0_in, double V0_in, double d_in);
 
-    // Getter
+    // Getters
     std::vector<Particle> get_particles();
+    bool get_status_particle_interaction();
+    
+    // Setters
+    void enable_particle_interaction();
+    void disable_particle_interaction()
 
     // Print information about the state of the particles
     void print_states();
@@ -48,7 +54,6 @@ class PenningTrap {
 
     // The total force on particle_i from both external fields and other particles
     arma::vec total_force(int i);
-
 
     // Evolve the system one time step (dt) using Runge-Kutta 4th order
     void evolve_RK4(double dt);

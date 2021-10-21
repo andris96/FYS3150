@@ -5,14 +5,28 @@ PenningTrap::PenningTrap(double B0_in, double V0_in, double d_in) {
     B0_ = B0_in;
     V0_ = V0_in;
     d_ = d_in;
+    particle_interaction_ = true;
 
     double k_e = 1.38935333*10e5; // Coulomb constant
     std::vector<Particle> particles;
 }
 
-// Getter
+// Getters
 std::vector<Particle> PenningTrap::get_particles() {
     return particles;
+}
+
+bool PenningTrap::get_status_particle_interaction() {
+    return particle_interaction_;
+}
+
+// Setters
+void PenningTrap::enable_particle_interaction() {
+    particle_interaction_ = true;
+}
+
+void PenningTrap::disable_particle_interaction() {
+    particle_interaction_ = false;
 }
 
 // Print information about the state of the particles
@@ -36,7 +50,7 @@ bool PenningTrap::is_within_trap(arma::vec r) {
 
 // External electric field at point r=(x,y,z)
 arma::vec PenningTrap::external_E_field(arma::vec r) {
-    if (is_within_trap(r) == true) {
+    if (is_within_trap(r)) {
         // Get position values
         double x = r.at(0);
         double y = r.at(1);
@@ -59,7 +73,7 @@ arma::vec PenningTrap::external_E_field(arma::vec r) {
 
 // External magnetic field at point r=(x,y,z)
 arma::vec PenningTrap::external_B_field(arma::vec r) {
-    if (is_within_trap(r) == true) {
+    if (is_within_trap(r)) {
         arma::vec B_field = arma::vec(3).fill(0.);
         B_field.at(2) = B0_;
         return B_field;
@@ -106,7 +120,7 @@ arma::vec PenningTrap::total_force_external(int i) {
 // The total force on particle_i from the other particles
 arma::vec PenningTrap::total_force_particles(int i) {
     //No force if there is only 1 particle
-    if (particles.size() < 2) {
+    if (particles.size() < 2 || get_status_particle_interaction() == false) {
         return arma::vec(3).fill(0);
     }
     else{
