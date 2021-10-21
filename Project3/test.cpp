@@ -7,12 +7,14 @@ int main()
 {
     int q_ca = 1;
     double m_ca = 40.08; // [u]
-    arma::vec v = arma::vec(3).fill(1);
-    arma::vec r = arma::vec(3).fill(0);
+    arma::vec v = arma::vec(3);
+    arma::vec r = arma::vec(3);
+    v << 1 << 0 << 0;
+    r << 1 << 1 << 0;
     Particle p1 = Particle(q_ca, m_ca, r, v);
     
     double tmax = 100; //100 micro seconds
-    int steps = 100; 
+    int steps = 10000; 
     double dt = tmax/steps;
 
     double T = 9.64852558*10e1;
@@ -34,7 +36,8 @@ int main()
     }
 
     // Compare the states of the particles in both systems
-    std::cout << "Trap evolved with Euler\n";
+    std::cout << "Time evolution: " << tmax << " us " << "with " << steps << " steps\n\n"
+    << "Trap evolved with Euler\n";
     trap_euler.print_states();
 
     std::cout << "Trap evolved with RK4 at\n";

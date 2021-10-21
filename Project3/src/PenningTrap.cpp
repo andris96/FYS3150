@@ -29,29 +29,44 @@ void PenningTrap::add_particle(Particle p_in) {
     particles.push_back(p_in);
 }
 
+// Check if a given position $r is within the boundaries of the trap
+bool PenningTrap::is_within_trap(arma::vec r) {
+    return (arma::norm(r) <= d_) ? true : false;
+}
+
 // External electric field at point r=(x,y,z)
 arma::vec PenningTrap::external_E_field(arma::vec r) {
-    // Get position values
-    double x = r.at(0);
-    double y = r.at(1);
-    double z = r.at(2);
+    if (is_within_trap(r) == true) {
+        // Get position values
+        double x = r.at(0);
+        double y = r.at(1);
+        double z = r.at(2);
 
-    // Compute the components of the gradient of V at $r
-    double dx = -x*(V0_/pow(d_,2));
-    double dy = -y*(V0_/pow(d_,2));
-    double dz = 2*z*(V0_/pow(d_,2));
+        // Compute the components of the gradient of V at $r
+        double dx = -x*(V0_/pow(d_,2));
+        double dy = -y*(V0_/pow(d_,2));
+        double dz = 2*z*(V0_/pow(d_,2));
 
-    // Compute the external electric field
-    arma::vec E_field = arma::vec(3).fill(0.);
-    E_field << -dx << -dy << -dz;
-    return E_field;
+        // Compute the external electric field
+        arma::vec E_field = arma::vec(3).fill(0.);
+        E_field << -dx << -dy << -dz;
+        return E_field;
+    }
+    else {
+        return arma::vec(3).fill(0.);
+    }
 }
 
 // External magnetic field at point r=(x,y,z)
 arma::vec PenningTrap::external_B_field(arma::vec r) {
-    arma::vec B_field = arma::vec(3).fill(0.);
-    B_field.at(2) = B0_;
-    return B_field;
+    if (is_within_trap(r) == true) {
+        arma::vec B_field = arma::vec(3).fill(0.);
+        B_field.at(2) = B0_;
+        return B_field;
+    }
+    else {
+        return arma::vec(3).fill(0.);
+    }
 }
 
 // Force on particle_i from particle_j

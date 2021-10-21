@@ -28,6 +28,9 @@ class PenningTrap {
     // Add a particle to the trap
     void add_particle(Particle p_in);
 
+    // Check if a given position $r is within the boundaries of the trap
+    bool is_within_trap(arma::vec r);
+
     // External electric field at point r=(x,y,z)
     arma::vec external_E_field(arma::vec r);  
 
