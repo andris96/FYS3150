@@ -21,21 +21,22 @@ arma::mat solve_analytical_1p(arma::vec r0, arma::vec v0, double tmax, double st
 int main()
 {
     // Initiating
-    int q_ca = 1;
+    double k_e = 1.38935333*10e5; // Coulomb constant, [u*(\mu*m)^2 / e*(\mu*s)^2]
+    double T = 9.64852558*10e1; // Tesla, [u / e*(\mu*s)]
+    double V = 9.64852558*10e7; // Volt, [u*(\mu*m)^2 / e*(\mu*s)^2]
+
+    int q_ca = 1*k_e;
     double m_ca = 40.08; // [u]
     arma::vec r = arma::vec(3);
     arma::vec v = arma::vec(3);
-    r << -1 << -1 << 1;
-    v << -1 << -1 << -1;
+    r << -.1 << -.1 << .1;
+    v << -.1 << -.1 << -.1;
     Particle p_ca_1 = Particle(q_ca, m_ca, r, v);
     Particle p_ca_2 = Particle(q_ca, m_ca, -r, -v);
 
     double tmax = 100; //100 micro seconds
     int steps = 10000;
     double dt = tmax/steps;
-
-    double T = 9.64852558*10e1;
-    double V = 9.64852558*10e7;
 
     double B0 = 1*T;  // Magnetic field strength, Tesla
     double V0 = 10*V; // Electric potential, Volt
@@ -141,9 +142,9 @@ int main()
             // Storing results for computing convergence rates later
             motion_r_diff = arma::abs(motion_r_analytical - motion_r);
             double delta_max = motion_r_diff.max();
-            h_vec.push_back(dt);
             if (methods.at(method) == "rk4") {
                 delta_max_rk4.push_back(delta_max);
+                h_vec.push_back(dt);
             }
             else {
                 delta_max_euler.push_back(delta_max);
@@ -167,7 +168,6 @@ int main()
 
     std::cout << "Convergence rate, Euler: " << convergence_rate_euler
     << "\nConvergence rate, RK4: " << convergence_rate_rk4 << std::endl;
-
 
     return 0;   
 }
