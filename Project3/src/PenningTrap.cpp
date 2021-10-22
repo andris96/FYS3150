@@ -48,6 +48,17 @@ bool PenningTrap::is_within_trap(arma::vec r) {
     return (arma::norm(r) <= d_) ? true : false;
 }
 
+
+// Count the number of particles within the boundaries of the trap
+int PenningTrap::count_particles() {
+    int particle_count = 0;
+    for (int i = 0; i < particles.size(); i++) {
+        particle_count += (is_within_trap(particles.at(i).r())) ? 1 : 0;
+    }
+    return particle_count;
+}
+
+
 // External electric field at point r=(x,y,z)
 arma::vec PenningTrap::external_E_field(arma::vec r) {
     if (is_within_trap(r)) {
