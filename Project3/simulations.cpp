@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string.h>
+#include <math.h>
 
 #include "Particle.hpp"
 #include "PenningTrap.hpp"
@@ -63,7 +64,7 @@ int main()
     // Outputting positions and velocities in .txt files for plotting 
     // in python. Simulating with and without particle interactions
     // enabled. 
-    //(Generates what's needed for questions 2-4 in problem 9)
+    //(Generates what's needed for tasks 2-4 in problem 9).
     //--------------------------------------------------------------
     std::vector<std::string> interaction_mode(2);
     interaction_mode.at(0) = "with";
@@ -98,8 +99,11 @@ int main()
     }
 
     // Once again simulating a single particle in the trap. 
-    // Evolving the system for 50 micro seconds in five different step lenghts 
-    // in order to compare the numerical with analytical.
+    // Evolving the system for 50 micro seconds in five different step 
+    // lenghts in order to compare the numerical with analytical.
+    // In addtion, the convergence rates for Euelr and RK4 is
+    // computed.
+    //(Generates what's needed for tasks 5-6 in problem 9).
     //--------------------------------------------------------------
     tmax = 50;
     arma::vec steps_vec = arma::vec(5);
@@ -109,16 +113,22 @@ int main()
     methods.at(0) = "rk4";
     methods.at(1) = "euler";
 
+    std::vector<double> delta_max_euler;
+    std::vector<double> delta_max_rk4;
+    std::vector<double> h_vec;
+
     for (int method = 0; method <= 1; method++) {
-        for (int h = 0; h < steps_vec.size(); h++) {
+        for (int s = 0; s < steps_vec.size(); s++) {
             PenningTrap trap = PenningTrap(B0, V0, d);
             trap.add_particle(p_ca_1);
 
-            arma::mat motion_r = arma::mat(steps_vec.at(h), 3, arma::fill::zeros);
-            arma::mat motion_r_analytical = solve_analytical_1p(r, v, tmax, steps_vec.at(h));
+            arma::mat motion_r = arma::mat(steps_vec.at(s), 3, arma::fill::zeros);
+            arma::mat motion_r_analytical = solve_analytical_1p(r, v, tmax, steps_vec.at(s));
+            arma::mat motion_r_diff = arma::mat(steps_vec.at(s), 3, arma::fill::zeros);
 
-            dt = tmax/steps_vec.at(h);
-            for(int i = 0; i < steps_vec.at(h); i++){
+            // Evolving tse system
+            dt = tmax/steps_vec.at(s);
+            for(int i = 0; i < steps_vec.at(s); i++){
                 if (methods.at(method) == "rk4") {
                     trap.evolve_RK4(dt);
                 }
@@ -127,11 +137,36 @@ int main()
                 }
                 motion_r.row(i) = trap.get_particles().at(0).r().t();
             }
-            motion_r.save("motion_r_h" + std::to_string(h) + "_" + methods.at(method) + ".txt", arma::raw_ascii);
-            motion_r_analytical.save("motion_r_h" + std::to_string(h) + "_analytical.txt", arma::raw_ascii);
+
+            // Storing results for computing convergence rates later
+            motion_r_diff = arma::abs(motion_r_analytical - motion_r);
+            double delta_max = motion_r_diff.max();
+            h_vec.push_back(dt);
+            if (methods.at(method) == "rk4") {
+                delta_max_rk4.push_back(delta_max);
+            }
+            else {
+                delta_max_euler.push_back(delta_max);
+            }
+
+            // Saving for later plotting in python
+            motion_r.save("motion_r_h" + std::to_string(s) + "_" + methods.at(method) + ".txt", arma::raw_ascii);
+            motion_r_analytical.save("motion_r_h" + std::to_string(s) + "_analytical.txt", arma::raw_ascii);
         }
     }
 
+    // Computing convergence rates and printing to terminal
+    double convergence_rate_euler;
+    double convergence_rate_rk4;
+    for (int k = 1; k < h_vec.size(); k++) {
+        convergence_rate_euler += log(delta_max_euler.at(k)/delta_max_euler.at(k-1)) / log(h_vec.at(k)/h_vec.at(k-1));
+        convergence_rate_rk4 += log(delta_max_rk4.at(k)/delta_max_rk4.at(k-1)) / log(h_vec.at(k)/h_vec.at(k-1));
+    }
+    convergence_rate_euler /= 4.;
+    convergence_rate_rk4 /= 4.;
+
+    std::cout << "Convergence rate, Euler: " << convergence_rate_euler
+    << "\nConvergence rate, RK4: " << convergence_rate_rk4 << std::endl;
 
 
     return 0;   
