@@ -6,7 +6,7 @@
 
 int main()
 {
-    // Initating
+    // Initiating
     int q_ca = 1;
     double m_ca = 40.08; // [u]
     arma::vec r = arma::vec(3);
@@ -48,9 +48,10 @@ int main()
 
     // Simulating two particles in the trap. Evolving the system
     // for $tmax micro seconds.
-    // Outputting x and y positions in .txt files for plotting 
+    // Outputting positions and velocities in .txt files for plotting 
     // in python. Simulating with and without particle interactions
-    // enabled.
+    // enabled. 
+    //(Generates what's needed for questions 2-4 in problem 9)
     //-----------------------------------------
     std::vector<std::string> interaction_mode(2);
     interaction_mode.at(0) = "with";
@@ -64,24 +65,25 @@ int main()
             }
 
             trap.add_particle(p_ca_1);
-            arma::vec motion_x_1(steps, arma::fill::zeros);
-            arma::vec motion_y_1(steps, arma::fill::zeros);
+            arma::mat motion_r_1(steps, 3, arma::fill::zeros);
+            arma::mat motion_v_1(steps, 3, arma::fill::zeros);
 
             trap.add_particle(p_ca_2);
-            arma::vec motion_x_2(steps, arma::fill::zeros);
-            arma::vec motion_y_2(steps, arma::fill::zeros);
+            arma::mat motion_r_2(steps, 3, arma::fill::zeros);
+            arma::mat motion_v_2(steps, 3, arma::fill::zeros);
 
             for(int i = 0; i < steps; i++){
                 trap.evolve_RK4(dt);
-                motion_x_1.at(i) = trap.get_particles().at(0).r().at(0);
-                motion_x_2.at(i) = trap.get_particles().at(0).r().at(1);
-                motion_y_1.at(i) = trap.get_particles().at(1).r().at(0);
-                motion_y_2.at(i) = trap.get_particles().at(1).r().at(1);
+                motion_r_1.row(i) = trap.get_particles().at(0).r().t(); // .t() : transposing col -> row
+                motion_v_1.row(i) = trap.get_particles().at(0).v().t();
+                motion_r_2.row(i) = trap.get_particles().at(1).r().t();
+                motion_v_2.row(i) = trap.get_particles().at(1).v().t();
             }
-            motion_x_1.save("motion_x_1_" + interaction_mode.at(mode) + "_interactions.txt", arma::raw_ascii);
-            motion_y_1.save("motion_y_1_" + interaction_mode.at(mode) + "_interactions.txt", arma::raw_ascii);
-            motion_x_2.save("motion_x_2_" + interaction_mode.at(mode) + "_interactions.txt", arma::raw_ascii);
-            motion_y_2.save("motion_y_2_" + interaction_mode.at(mode) + "_interactions.txt", arma::raw_ascii);
+
+            motion_r_1.save("motion_r_1_" + interaction_mode.at(mode) + "_interactions.txt", arma::raw_ascii);
+            motion_v_1.save("motion_v_1_" + interaction_mode.at(mode) + "_interactions.txt", arma::raw_ascii);
+            motion_r_2.save("motion_r_2_" + interaction_mode.at(mode) + "_interactions.txt", arma::raw_ascii);
+            motion_v_2.save("motion_v_2_" + interaction_mode.at(mode) + "_interactions.txt", arma::raw_ascii);
     }
 
     return 0;   
