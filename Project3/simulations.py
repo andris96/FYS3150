@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 # Load data
 z = np.loadtxt("motion_z_RK4.txt")
@@ -15,43 +16,76 @@ v1_without_interactions = np.loadtxt("motion_v_1_without_interactions.txt")
 r2_without_interactions = np.loadtxt("motion_r_2_without_interactions.txt")
 v2_without_interactions = np.loadtxt("motion_v_2_without_interactions.txt")
 
+# Structering data for easier access
+data_2p_system = {
+    "With" : {
+        "1" : { "r" : r1_with_interactions, "v" : v1_with_interactions
+        },
+        "2" : { "r" : r2_with_interactions, "v" : v2_with_interactions
+        }
+    },
+    "Without" : {
+        "1" : { "r" : r1_with_interactions, "v" : v1_with_interactions
+        },
+        "2" : { "r" : r2_with_interactions, "v" : v2_with_interactions
+        }
+    }
+}
+
 # Plot the motion of a single particle in the z direction as a funstion of time
 plt.plot(t, z, label="Motion in Z direction")
 plt.xlabel("Time [$\mu s$]")
 plt.ylabel("Position, z [$\mu m$]")
 plt.legend()
-plt.savefig("zplot.pdf")
+plt.savefig("z_plot.pdf")
+plt.clf()
 
 # Plot the motion of the two particles in the xy-plane
-plt.plot(r1_with_interactions[:,0], r1_with_interactions[:,1], label="Particle 1")
-plt.plot(r2_with_interactions[:,0], r2_with_interactions[:,1], label="Particle 2")
-plt.plot(r1_without_interactions[:,0], r1_without_interactions[:,1], label="Particle 1")
-plt.plot(r2_without_interactions[:,0], r2_without_interactions[:,1], label="Particle 2")
+fig, (ax1, ax2) = plt.subplots(1, 2, sharex=True, sharey=True, figsize=(8,4))
+fig.add_subplot(111, frameon=False)
+plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
+
+axes = [ax1, ax2]
+for idx, mode in enumerate(["With", "Without"]):
+    for particle in ["1", "2"]:
+        axes[idx].plot(data_2p_system[mode][particle]["r"][:,0], 
+                       data_2p_system[mode][particle]["r"][:,1], 
+                       label=f"Particle {particle}")
+        axes[idx].set_title(f"{mode} particle interactions")
+        axes[idx].legend()
+
+fig.tight_layout(pad=2)
 plt.xlabel("x [$\mu m$]")
 plt.ylabel("y [$\mu m$]")
-plt.legend()
-plt.savefig("xyplot.pdf")
+fig.savefig("xy_plots.pdf")
+plt.close()
 
-# Phase space plots..
-## NOT COMPLETED...
 
-# plt.plot(r1_with_interactions[:,0], v1_with_interactions[:,0] label="Particle 1")
-# plt.plot(v2_with_interactions[:,0], v2_with_interactions[:,0] label="Particle 2")
-# plt.xlabel("x [$\mu m$]")
-# plt.ylabel("$v_x$ [$\mu m$]")
-# plt.legend()
-# plt.savefig("xv_xplot.pdf")
+# Phase space plots for the two particles: position vs. velocity for each direction
+# NOT COMPLETED!! Need minor fixes to make it "pretty"
+fig, axes = plt.subplots(3, 2, sharex=True, sharey=True, figsize=(8,12))
+fig.add_subplot(111, frameon=False)
+plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
 
-# plt.plot(r1_with_interactions[:,0], r1_with_interactions[:,1] label="Particle 1")
-# plt.plot(r2_with_interactions[:,0], r2_with_interactions[:,1] label="Particle 2")
-# plt.xlabel("x [$\mu m$]")
-# plt.ylabel("y [$\mu m$]")
-# plt.legend()
-# plt.savefig("xyplot.pdf")
+for row, dir_ in enumerate(["x", "y", "z"]):
+    for col, mode in enumerate(["With", "Without"]):
+        for particle in ["1", "2"]:
+            axes[row, col].plot(data_2p_system[mode][particle]["r"][:,row], 
+                                data_2p_system[mode][particle]["v"][:,row], 
+                                label=f"Particle {particle}")
+            axes[row, col].set_title(f"{mode} particle interactions")
+            axes[row, col].legend()
 
-# plt.plot(r1_with_interactions[:,0], r1_with_interactions[:,1] label="Particle 1")
-# plt.plot(r2_with_interactions[:,0], r2_with_interactions[:,1] label="Particle 2")
-# plt.xlabel("x [$\mu m$]")
-# plt.ylabel("y [$\mu m$]")
-# plt.legend()
-# plt.savefig("xyplot.pdf")
+fig.tight_layout(pad=2)
+plt.xlabel("x [$\mu m$]")
+plt.ylabel("y [$\mu m$]")
+fig.savefig("phase_plots.pdf")
+plt.close()
+
+
+# 3D plot of trajectories
+fig = plt.figure()
+ax = fig.add_subplot(111, projection = '3d')
+ax.plot(points[0], points[1], points[2], marker = 'x')
+ax.scatter(*points.T[0], color = 'red')
+plt.show()
