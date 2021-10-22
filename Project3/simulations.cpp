@@ -4,6 +4,11 @@
 #include "Particle.hpp"
 #include "PenningTrap.hpp"
 
+// To compile: 
+// g++ simulations.cpp src/Particle.cpp src/PenningTrap.cpp -I include -o simulations.exe -larmadillo
+// To run: ./simulations.exe
+
+
 int main()
 {
     // Initiating
@@ -43,7 +48,7 @@ int main()
         motion_z.at(i) = trap.get_particles().at(0).r().at(2);
     }
 
-    motion_z.save("motion_z.txt", arma::raw_ascii);
+    motion_z.save("motion_z_RK4.txt", arma::raw_ascii);
     time_interval.save("time_interval.txt", arma::raw_ascii);
 
     // Simulating two particles in the trap. Evolving the system
