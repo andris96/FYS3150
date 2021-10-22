@@ -25,9 +25,9 @@ data_2p_system = {
         }
     },
     "Without" : {
-        "1" : { "r" : r1_with_interactions, "v" : v1_with_interactions
+        "1" : { "r" : r1_without_interactions, "v" : v1_without_interactions
         },
-        "2" : { "r" : r2_with_interactions, "v" : v2_with_interactions
+        "2" : { "r" : r2_without_interactions, "v" : v2_without_interactions
         }
     }
 }
