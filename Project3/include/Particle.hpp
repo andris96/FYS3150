@@ -21,7 +21,7 @@ class Particle {
     public:
     // Constructors
     Particle(); // Default, initiates with m=q=1 and r=v=0
-    Particle(int c_in, double m_in, arma::vec r_in, arma::vec v_in);
+    Particle(int q_in, double m_in, arma::vec r_in, arma::vec v_in);
 
     // Methods that returns the variables of the particle
     int q();

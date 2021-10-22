@@ -21,11 +21,11 @@ arma::mat solve_analytical_1p(arma::vec r0, arma::vec v0, double tmax, double st
 int main()
 {
     // Initiating
-    double k_e = 1.38935333*10e5; // Coulomb constant, [u*(\mu*m)^2 / e*(\mu*s)^2]
+    //double k_e = 1.38935333*10e5; // Coulomb constant, [u*(\mu*m)^2 / e*(\mu*s)^2]
     double T = 9.64852558*10e1; // Tesla, [u / e*(\mu*s)]
     double V = 9.64852558*10e7; // Volt, [u*(\mu*m)^2 / e*(\mu*s)^2]
 
-    int q_ca = 1*k_e;
+    int q_ca = 1;
     double m_ca = 40.08; // [u]
     arma::vec r = arma::vec(3);
     arma::vec v = arma::vec(3);

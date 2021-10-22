@@ -13,6 +13,7 @@ class PenningTrap {
     protected:
     double B0_, V0_, d_;
     double k_e_;
+    double f_, omega_V_;
     bool particle_interaction_;
     bool time_dependence_;
     std::vector<Particle> particles_;
@@ -35,12 +36,17 @@ class PenningTrap {
     void disable_particle_interaction();
     void enable_time_dependence();
     void disable_time_dependence();
+    void set_f(double f_in);
+    void set_omega_V(double omega_V_in);
 
     // Print information about the state of the particles
     void print_states();
 
     // Add a particle to the trap
     void add_particle(Particle p_in);
+
+    // Fill the trap with $n randomly initiated particles
+    void fill_with_particles(int q, double m, int n);
 
     // Check if a given position $r is within the boundaries of the trap
     bool is_within_trap(arma::vec r);

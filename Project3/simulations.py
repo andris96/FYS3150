@@ -41,16 +41,16 @@ plt.savefig("z_plot.pdf")
 plt.clf()
 
 # Plot the motion of the two particles in the xy-plane
-fig, (ax1, ax2) = plt.subplots(1, 2, sharex=True, sharey=True, figsize=(8,4))
+fig, (ax1, ax2) = plt.subplots(1, 2, sharex=True, sharey=True, figsize=plt.figaspect(0.5))
 fig.add_subplot(111, frameon=False)
 plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
 
 axes = [ax1, ax2]
 for idx, mode in enumerate(["With", "Without"]):
-    for particle in ["1", "2"]:
-        axes[idx].plot(data_2p_system[mode][particle]["r"][:,0], 
-                       data_2p_system[mode][particle]["r"][:,1], 
-                       label=f"Particle {particle}")
+    for particle in ["1", "2"]:    
+        x = data_2p_system[mode][particle]["r"][:, 0]
+        y = data_2p_system[mode][particle]["r"][:, 1]
+        axes[idx].plot(x, y, label=f"Particle {particle}")
         axes[idx].set_title(f"{mode} particle interactions")
         axes[idx].legend()
 
@@ -82,10 +82,20 @@ plt.ylabel("y [$\mu m$]")
 fig.savefig("phase_plots.pdf")
 plt.close()
 
-
 # 3D plot of trajectories
-fig = plt.figure()
-ax = fig.add_subplot(111, projection = '3d')
-ax.plot(points[0], points[1], points[2], marker = 'x')
-ax.scatter(*points.T[0], color = 'red')
-plt.show()
+# NOT COMPLETE! Both particles not appearing
+fig = plt.figure(figsize=plt.figaspect(0.5))
+axes = [ax1, ax2]
+for idx, mode in enumerate(["With", "Without"]):
+    for particle in ["1", "2"]:
+        x = data_2p_system[mode][particle]["r"][:, 0]
+        y = data_2p_system[mode][particle]["r"][:, 1]
+        z = data_2p_system[mode][particle]["r"][:, 2]
+
+        axes[idx] = fig.add_subplot(1, 2, idx+1, projection='3d')
+
+        axes[idx].plot(x, y, z, marker="x", label=f"Particle {particle}")
+        axes[idx].set_title(f"{mode} particle interactions")
+        axes[idx].legend()
+
+plt.savefig("3D_plot.pdf")

@@ -7,6 +7,9 @@ PenningTrap::PenningTrap(double B0_in, double V0_in, double d_in) {
     d_ = d_in;
     k_e_ = 1.38935333*10e5; // Coulomb constant, [u*(\mu*m)^2 / e*(\mu*s)^2]
 
+    f_ = 1;
+    omega_V_ = 1;
+
     particle_interaction_ = true;
     time_dependence_ = false;
 
@@ -44,7 +47,12 @@ void PenningTrap::enable_time_dependence() {
 void PenningTrap::disable_time_dependence() {
     time_dependence_ = false;
 }
-
+void PenningTrap::set_f(double f_in) {
+    f_ = f_in;
+}
+void PenningTrap::set_omega_V(double omega_V_in) {
+    omega_V_ = omega_V_in;
+}
 // Print information about the state of the particles
 void PenningTrap::print_states() {
     for (int i = 0; i < particles_.size(); i++) {
@@ -57,6 +65,16 @@ void PenningTrap::print_states() {
 // Add a particle to the trap
 void PenningTrap::add_particle(Particle p_in) {
     particles_.push_back(p_in);
+}
+
+// Fill the trap with $n randomly initiated particles
+void PenningTrap::fill_with_particles(int q, double m, int n) {
+    for (int i = 0; i < n; i++) {
+        arma::vec r = arma::vec(3).randn() * 0.1 * d_;  // random initial position
+        arma::vec v = arma::vec(3).randn() * 0.1 * d_;  // random initial velocity
+        Particle p(q, m, r, v);
+        particles_.push_back(p);
+    }
 }
 
 // Check if a given position $r is within the boundaries of the trap
@@ -92,14 +110,8 @@ arma::vec PenningTrap::external_E_field(arma::vec r) {
         arma::vec E_field = arma::vec(3).fill(0.);
         E_field << -dx << -dy << -dz;
 
-        //--------------------
-        // WHAT VALUES??? Constants for the time-dependent E-field
-        double f = 1; 
-        double omega_V = 1;
-        //--------------------
-
         // Account for time-dependence
-        return (get_status_time_dependence()) ? E_field*(1 + f*cos(total_time_*omega_V)) : E_field;//  <--- ?????
+        return (get_status_time_dependence()) ? E_field*(1 + f_*cos(total_time_*omega_V_)) : E_field;//  <--- ?????
     }
     else {
         return arma::vec(3).fill(0.);
