@@ -12,21 +12,29 @@ class PenningTrap {
 
     protected:
     double B0_, V0_, d_;
-    double k_e, T, V;
+    double k_e_;
     bool particle_interaction_;
-    std::vector<Particle> particles;
+    bool time_dependence_;
+    std::vector<Particle> particles_;
+    double total_time_;
     
     public:
     // Constructor
     PenningTrap(double B0_in, double V0_in, double d_in);
 
+    // Reset the trap: clear all particles and reset the time
+    void reset();
+
     // Getters
     std::vector<Particle> get_particles();
     bool get_status_particle_interaction();
+    bool get_status_time_dependence();
     
     // Setters
     void enable_particle_interaction();
     void disable_particle_interaction();
+    void enable_time_dependence();
+    void disable_time_dependence();
 
     // Print information about the state of the particles
     void print_states();
