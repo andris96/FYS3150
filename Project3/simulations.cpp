@@ -21,8 +21,14 @@ int main()
     double m_ca = 40.08; // [u]
     arma::vec r = arma::vec(3);
     arma::vec v = arma::vec(3);
-    r << -.1 << -.1 << .1;
-    v << -.1 << -.1 << -.1;
+    r << -.1 << 0.0 << .1;
+    v << 0.0 << -.1 << 0.0;
+
+    //parameters for the analytical solution
+    double x0 = r(0);
+    double z0 = r(2);
+    double v0 = v(1);
+
     Particle p_ca_1 = Particle(q_ca, m_ca, r, v);
     Particle p_ca_2 = Particle(q_ca, m_ca, -r, -v);
 
@@ -116,7 +122,8 @@ int main()
             trap.add_particle(p_ca_1);
 
             arma::mat motion_r = arma::mat(steps_vec.at(s), 3, arma::fill::zeros);
-            arma::mat motion_r_analytical = solve_analytical_1p(r, v, tmax, steps_vec.at(s));
+            arma::mat motion_r_analytical = solve_analytical_1p(v0, x0, z0, tmax, 
+                                                                steps_vec.at(s), q_ca, B0, V0, m_ca, d);
             arma::mat motion_r_diff = arma::mat(steps_vec.at(s), 3, arma::fill::zeros);
 
             // Evolving tse system
