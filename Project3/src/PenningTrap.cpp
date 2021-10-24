@@ -219,10 +219,10 @@ void PenningTrap::evolve_RK4(double dt){
         // Taking mass into account here
         particles_.at(i).v_ = v_i + 1./6. * (k1 + 2*k2 + 2*k3 + k4);
         particles_.at(i).r_ = particles_.at(i).v_*dt;
-
-        // Keeping track of the time-evolution
-        total_time_ += dt;
     }
+    
+    // Keeping track of the time-evolution
+    total_time_ += dt;
 }
 
 // Evolve the system one time step (dt) using Forward Euler
