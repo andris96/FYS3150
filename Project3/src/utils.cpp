@@ -24,9 +24,9 @@ arma::mat solve_analytical_1p(double v0, double x0, double z0, double tmax, int 
         y = A_pluss*sin(-omega_pluss*t) + A_minus*sin(-omega_minus*t);
         z = z0*cos(omega_z*t);
         t += dt;
-        motion_r.at(i).at(0) = x;
-        motion_r.at(i).at(1) = y;
-        motion_r.at(i).at(2) = z;
+        motion_r.at(i,0) = x;
+        motion_r.at(i,1) = y;
+        motion_r.at(i,2) = z;
     }
 
     return motion_r;
