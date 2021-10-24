@@ -33,6 +33,9 @@ bool PenningTrap::get_status_particle_interaction() {
 bool PenningTrap::get_status_time_dependence() {
     return time_dependence_;
 }
+double PenningTrap::get_total_system_time() {
+    return total_time_;
+}
 
 // Setters
 void PenningTrap::enable_particle_interaction() {
@@ -220,7 +223,7 @@ void PenningTrap::evolve_RK4(double dt){
         particles_.at(i).v_ = v_i + 1./6. * (k1 + 2*k2 + 2*k3 + k4);
         particles_.at(i).r_ = particles_.at(i).v_*dt;
     }
-    
+
     // Keeping track of the time-evolution
     total_time_ += dt;
 }

@@ -30,6 +30,7 @@ class PenningTrap {
     std::vector<Particle> get_particles();
     bool get_status_particle_interaction();
     bool get_status_time_dependence();
+    double get_total_system_time();
     
     // Setters
     void enable_particle_interaction();
