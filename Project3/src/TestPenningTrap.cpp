@@ -10,7 +10,7 @@ void TestPenningTrap::runAllTests() {
     test_is_within_trap();
     test_fill_with_particles();
     test_count_particles();
-}
+    test_external_E_field();
 
 void TestPenningTrap::test_add_particle() {
     double B0 = 1;
