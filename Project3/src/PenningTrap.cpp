@@ -70,6 +70,11 @@ void PenningTrap::add_particle(Particle p_in) {
     particles_.push_back(p_in);
 }
 
+// Check if a given position $r is within the boundaries of the trap
+bool PenningTrap::is_within_trap(arma::vec r) {
+    return (arma::norm(r, 2) <= d_) ? true : false;
+}
+
 // Fill the trap with $n randomly initiated particles
 void PenningTrap::fill_with_particles(int q, double m, int n) {
     for (int i = 0; i < n; i++) {
@@ -78,11 +83,6 @@ void PenningTrap::fill_with_particles(int q, double m, int n) {
         Particle p(q, m, r, v);
         particles_.push_back(p);
     }
-}
-
-// Check if a given position $r is within the boundaries of the trap
-bool PenningTrap::is_within_trap(arma::vec r) {
-    return (arma::norm(r) <= d_) ? true : false;
 }
 
 // Count the number of particles within the boundaries of the trap

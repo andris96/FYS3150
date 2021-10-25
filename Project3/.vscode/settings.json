@@ -55,6 +55,11 @@
         "mutex": "cpp",
         "thread": "cpp",
         "cinttypes": "cpp",
-        "armadillo": "cpp"
+        "armadillo": "cpp",
+        "csetjmp": "cpp",
+        "codecvt": "cpp",
+        "list": "cpp",
+        "iomanip": "cpp",
+        "cfenv": "cpp"
     }
 }
