@@ -11,7 +11,7 @@ void TestPenningTrap::runAllTests() {
     test_fill_with_particles();
     test_count_particles();
     test_external_E_field();
-
+}
 void TestPenningTrap::test_add_particle() {
     double B0 = 1;
     double V0 = 1;
@@ -127,8 +127,8 @@ void TestPenningTrap::test_external_E_field() {
 
     arma::vec e_field_numerical = trap.external_E_field(r);
     arma::vec e_field_analytical = arma::vec(3).fill(0.0);
-    // e_field_analytical << ? << ? << ?;
+    e_field_analytical << -0.0001 << -0.0001 << 0.0002;
 
     double tolerance = 10e-8;
-    assert((arma::approx_equal(e_field_analytical, e_field_numerical, "both", tolerance)) && ("Numerical and analytical result not equal for E-field!\n"));
+    assert((arma::approx_equal(e_field_analytical, e_field_numerical, "absdiff", tolerance)) && ("Numerical and analytical result not equal for E-field!\n"));
 }
