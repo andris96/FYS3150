@@ -5,7 +5,7 @@
 #include "TestPenningTrap.hpp"
 
 // To compile:
-// g++ test.cpp src/PenningTrap.cpp src/Particle.cpp -I include -o test.exe -larmadillo
+// g++ test.cpp src/TestPenningTrap.cpp src/PenningTrap.cpp src/Particle.cpp -I include -o test.exe -larmadillo
 
 
 int main()
