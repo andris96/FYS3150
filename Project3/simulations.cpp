@@ -34,7 +34,7 @@ int main()
     Particle p_ca_2 = Particle(q_ca, m_ca, -r, -v);
 
     double tmax = 100; //100 micro seconds
-    int steps = 10000;
+    int steps = 1000;
     double dt = tmax/steps;
 
     double B0 = 1*T;  // Magnetic field strength, Tesla
@@ -49,15 +49,18 @@ int main()
     trap.add_particle(p_ca_1);
 
     arma::vec motion_z(steps, arma::fill::zeros);
+    arma::mat motion_analytical = solve_analytical_1p(v0, x0, z0, tmax, steps, q_ca, B0, V0, m_ca, d);
     arma::vec motion_z_analytical(steps, arma::fill::zeros);
     arma::vec time_interval = arma::linspace(0, tmax, steps);
 
     for(int i = 0; i < steps; i++){
         trap.evolve_RK4(dt);
         motion_z.at(i) = trap.get_particles().at(0).r().at(2);
-        motion_z_analytical.at(i) = solve_analytical_1p(v0, x0, z0, tmax,
-                                                        steps, q_ca, B0, V0, m_ca, d).at(2);
+        motion_z_analytical(i) = motion_analytical(i,2);
     }
+
+    
+
 
     motion_z.save("motion_z_RK4.txt", arma::raw_ascii);
     motion_z_analytical.save("motion_z_analytical.txt", arma::raw_ascii);

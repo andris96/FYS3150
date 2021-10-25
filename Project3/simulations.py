@@ -34,7 +34,7 @@ data_2p_system = {
 }
 
 # Plot the motion of a single particle in the z direction as a funstion of time
-plt.plot(t, z, label="Motion in Z direction")
+#plt.plot(t, z, label="Motion in Z direction")
 plt.plot(t, z_a, label="Motion in Z direction, analytical")
 plt.xlabel("Time [$\mu s$]")
 plt.ylabel("Position, z [$\mu m$]")
