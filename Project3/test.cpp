@@ -61,8 +61,13 @@ int main()
     // assert(arma::norm(r, 1) > 1);
 
     // Testing PenningTrap class
-    TestPenningTrap test_trap = TestPenningTrap();
-    test_trap.runAllTests();
+    //TestPenningTrap test_trap = TestPenningTrap();
+    //test_trap.runAllTests();
+
+    arma::vec r_test = arma::vec(3);
+    r_test.fill(100.0);
+    PenningTrap test = PenningTrap(1,1,1000);
+    std::cout << test.external_E_field(r_test) << std::endl;
 
     return 0;
 }
