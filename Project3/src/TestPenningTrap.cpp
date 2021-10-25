@@ -9,6 +9,7 @@ void TestPenningTrap::runAllTests() {
     test_reset();
     test_is_within_trap();
     test_fill_with_particles();
+    test_count_particles();
 }
 
 void TestPenningTrap::test_add_particle() {
@@ -79,9 +80,55 @@ void TestPenningTrap::test_fill_with_particles() {
     trap.fill_with_particles(q, m, N);
 
     std::vector<Particle> particles = trap.get_particles();
-    assert((particles.size() == N) && ("The trap was not filled with " + std::to_string(N) + " particles!\n"));
+    assert((particles.size() == N) && ("The trap was not filled with 10 particles!\n"));
     
     for (int i = 0; i < N; i++) {
-        assert((arma::norm(particles.at(i).r(), 2) <= d) && ("Particle not initiated within the trap!\n"))
+        assert((arma::norm(particles.at(i).r(), 2) <= d) && ("Particle not initiated within the trap!\n"));
     }
+}
+
+void TestPenningTrap::test_count_particles() {
+
+    double B0 = 1;
+    double V0 = 1;
+    double d = 1; 
+
+    double q = 1;
+    double m = 1;
+
+    arma::vec r_within = arma::vec(3).fill(0.1*d);
+    arma::vec v = arma::vec(3).fill(0.0);
+
+    int N = 10;
+    Particle p = Particle(q, m, r_within, v);
+
+    PenningTrap trap = PenningTrap(B0, V0 ,d);
+    for (int i = 0; i < N; i++) {
+        trap.add_particle(p);
+    }
+
+    assert((trap.count_particles() ==  N) && ("The particle counter did return 10 as expected!\n"));
+
+}
+
+void TestPenningTrap::test_external_E_field() {
+
+    double B0 = 1; // Not relevant, only for instantiation
+    double V0 = 1; // same
+    double d = 1000; 
+
+    double q = 1; // same
+    double m = 1; // same
+
+    arma::vec r = arma::vec(3).fill(0.1*d);
+    arma::vec v = arma::vec(3).fill(0.0);
+
+    PenningTrap trap = PenningTrap(B0, V0 ,d);
+
+    arma::vec e_field_numerical = trap.external_E_field(r);
+    arma::vec e_field_analytical = arma::vec(3).fill(0.0);
+    // e_field_analytical << ? << ? << ?;
+
+    double tolerance = 10e-8;
+    assert((arma::approx_equal(e_field_analytical, e_field_numerical, "both", tolerance)) && ("Numerical and analytical result not equal for E-field!\n"));
 }
