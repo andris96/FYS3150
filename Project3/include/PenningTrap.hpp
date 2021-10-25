@@ -39,6 +39,7 @@ class PenningTrap {
     void disable_time_dependence();
     void set_f(double f_in);
     void set_omega_V(double omega_V_in);
+    void set_total_time(double t);// Mainly for testing purposes, consider removing
 
     // Print information about the state of the particles
     void print_states();

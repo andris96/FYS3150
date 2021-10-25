@@ -14,12 +14,12 @@ int main()
     // double m_ca = 40.08; // [u]
     // arma::vec v = arma::vec(3);
     // arma::vec r = arma::vec(3);
-    // v << 1 << 0 << 0;
-    // r << 1 << 1 << 1;
+    // v << 10 << 0 << 0;
+    // r << 100 << 100 << 100;
     // Particle p1 = Particle(q_ca, m_ca, r, v);
     
     // double tmax = 100; //100 micro seconds
-    // int steps = 10000; 
+    // int steps = 1000; 
     // double dt = tmax/steps;
 
     // double T = 9.64852558*10e1;
@@ -61,13 +61,23 @@ int main()
     // assert(arma::norm(r, 1) > 1);
 
     // Testing PenningTrap class
-    //TestPenningTrap test_trap = TestPenningTrap();
-    //test_trap.runAllTests();
+    TestPenningTrap test_trap = TestPenningTrap();
+    test_trap.runAllTests();
 
-    arma::vec r_test = arma::vec(3);
-    r_test.fill(100.0);
-    PenningTrap test = PenningTrap(1,1,1000);
-    std::cout << test.external_E_field(r_test) << std::endl;
+    // arma::vec r_test = arma::vec(3);
+    // r_test.fill(100.0);
+    // PenningTrap test = PenningTrap(1,1,1000);
+    // std::cout << test.external_E_field(r_test) << std::endl;
+
+    // arma::vec a = arma::vec(3).fill(1.0);
+    // arma::vec b = arma::vec(3).fill(1.0+10e-8);
+
+    // if (arma::approx_equal(a, b, "absdiff", 10e-7)) {
+    //     std::cout << "Equal" << std::endl;
+    // }
+    // else {
+    //     std::cout << "Not equal" << std::endl;
+    // }
 
     return 0;
 }

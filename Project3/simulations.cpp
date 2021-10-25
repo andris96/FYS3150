@@ -22,8 +22,8 @@ int main()
     double m_ca = 40.08; // [u]
     arma::vec r = arma::vec(3);
     arma::vec v = arma::vec(3);
-    r << -.1 << 0.0 << .1;
-    v << 0.0 << -.1 << 0.0;
+    r << -100 << 0.0 << 10;
+    v << 0.0 << -100 << 0.0;
 
     //parameters for the analytical solution
     double x0 = r(0);
@@ -33,13 +33,13 @@ int main()
     Particle p_ca_1 = Particle(q_ca, m_ca, r, v);
     Particle p_ca_2 = Particle(q_ca, m_ca, -r, -v);
 
-    double tmax = 100; //100 micro seconds
-    int steps = 1000;
+    double tmax = 10; //100 micro seconds
+    int steps = 5000;
     double dt = tmax/steps;
 
     double B0 = 1*T;  // Magnetic field strength, Tesla
     double V0 = 10*V; // Electric potential, Volt
-    double d = 1000; // 1000 micrometers = 1 cm
+    double d = 10e4; // 10 000 micrometers = 1 cm
 
     // Simulating a single particle in the trap. Evolving the system
     // for $tmax micro seconds. Outputting z and t in .txt files for 
