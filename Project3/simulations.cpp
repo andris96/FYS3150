@@ -7,7 +7,8 @@
 #include "utils.hpp"
 
 // To compile: 
-// g++ simulations.cpp src/Particle.cpp src/PenningTrap.cpp -I include -o simulations.exe -larmadillo
+// g++ simulations.cpp src/Particle.cpp src/PenningTrap.cpp src/utils.cpp
+// -I include -o simulations.exe -larmadillo
 // To run: ./simulations.exe
 
 int main()
@@ -48,14 +49,18 @@ int main()
     trap.add_particle(p_ca_1);
 
     arma::vec motion_z(steps, arma::fill::zeros);
+    arma::vec motion_z_analytical(steps, arma::fill::zeros);
     arma::vec time_interval = arma::linspace(0, tmax, steps);
 
     for(int i = 0; i < steps; i++){
         trap.evolve_RK4(dt);
         motion_z.at(i) = trap.get_particles().at(0).r().at(2);
+        motion_z_analytical.at(i) = solve_analytical_1p(v0, x0, z0, tmax,
+                                                        steps, q_ca, B0, V0, m_ca, d).at(2);
     }
 
     motion_z.save("motion_z_RK4.txt", arma::raw_ascii);
+    motion_z_analytical.save("motion_z_analytical.txt", arma::raw_ascii);
     time_interval.save("time_interval.txt", arma::raw_ascii);
 
     // Simulating two particles in the trap. Evolving the system
@@ -126,7 +131,7 @@ int main()
                                                                 steps_vec.at(s), q_ca, B0, V0, m_ca, d);
             arma::mat motion_r_diff = arma::mat(steps_vec.at(s), 3, arma::fill::zeros);
 
-            // Evolving tse system
+            // Evolving the system
             dt = tmax/steps_vec.at(s);
             for(int i = 0; i < steps_vec.at(s); i++){
                 if (methods.at(method) == "rk4") {

@@ -4,6 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 # Load data
 z = np.loadtxt("motion_z_RK4.txt")
+z_a = np.loadtxt("motion_z_analytical.txt")
 t = np.loadtxt("time_interval.txt")
 
 r1_with_interactions = np.loadtxt("motion_r_1_with_interactions.txt")
@@ -34,6 +35,7 @@ data_2p_system = {
 
 # Plot the motion of a single particle in the z direction as a funstion of time
 plt.plot(t, z, label="Motion in Z direction")
+plt.plot(t, z_a, label="Motion in Z direction, analytical")
 plt.xlabel("Time [$\mu s$]")
 plt.ylabel("Position, z [$\mu m$]")
 plt.legend()
