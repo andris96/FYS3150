@@ -18,7 +18,7 @@ class TestPenningTrap {
     void test_fill_with_particles();
     void test_count_particles();
     void test_external_E_field();
-    
+    void test_external_B_field();
 };
 
 #endif

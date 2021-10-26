@@ -56,6 +56,11 @@ void PenningTrap::set_f(double f_in) {
 void PenningTrap::set_omega_V(double omega_V_in) {
     omega_V_ = omega_V_in;
 }
+void PenningTrap::set_total_time(double t) {
+    // Mainly for testing purposes, consider removing
+    total_time_ = t;
+}
+
 // Print information about the state of the particles
 void PenningTrap::print_states() {
     for (int i = 0; i < particles_.size(); i++) {
@@ -96,10 +101,10 @@ int PenningTrap::count_particles() {
 
 // External electric field at point r=(x,y,z)
 // NOT COMPLETE!!
-// Time dependence probably not correct..
+// Time dependence possibly not correct..
 arma::vec PenningTrap::external_E_field(arma::vec r) {
     if (is_within_trap(r)) {
-        // Get position values
+        // Get position values0,
         double x = r.at(0);
         double y = r.at(1);
         double z = r.at(2);
@@ -114,7 +119,7 @@ arma::vec PenningTrap::external_E_field(arma::vec r) {
         E_field << -dx << -dy << -dz;
 
         // Account for time-dependence
-        return (get_status_time_dependence()) ? E_field*(1 + f_*cos(total_time_*omega_V_)) : E_field;//  <--- ?????
+        return (get_status_time_dependence()) ? E_field*(1 + f_*cos(total_time_*omega_V_)) : E_field;
     }
     else {
         return arma::vec(3).fill(0.);
@@ -147,7 +152,8 @@ arma::vec PenningTrap::force_particle(int i, int j) {
         arma::vec r_j = particles_.at(j).r();
 
         arma::vec force = arma::vec(3).fill(0.);
-        force = k_e_*q_i*q_j*(r_i - r_j)/(pow(arma::abs(r_i - r_j), 3));
+        // force = k_e_*q_i*q_j*(r_i - r_j)/(pow(arma::abs(r_i - r_j), 3));
+        force = k_e_*q_i*q_j*(r_i - r_j)/(pow(arma::norm(r_i - r_j, 2), 3));
         return force;
     }
 }
@@ -174,14 +180,13 @@ arma::vec PenningTrap::total_force_particles(int i) {
         return arma::vec(3).fill(0);
     }
     else{
-    arma::vec total_force = arma::vec(3).fill(0.);
-
-    for (int j = 0; j < particles_.size(); j++) {
-        if (j != i) {
-            total_force += force_particle(i, j); 
+        arma::vec total_force = arma::vec(3).fill(0.);
+        for (int j = 0; j < particles_.size(); j++) {
+            if (j != i) {
+                total_force += force_particle(i, j); 
+            }
         }
-    }
-    return total_force;
+        return total_force;
     }
 }
 
