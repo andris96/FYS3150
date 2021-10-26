@@ -33,7 +33,7 @@ bool PenningTrap::get_status_particle_interaction() {
 bool PenningTrap::get_status_time_dependence() {
     return time_dependence_;
 }
-double PenningTrap::get_total_system_time() {
+double PenningTrap::get_total_time() {
     return total_time_;
 }
 
@@ -205,16 +205,15 @@ arma::vec PenningTrap::total_force(int i) {
 void PenningTrap::evolve_RK4(double dt){
     arma::vec k1, k2, k3, k4; 
     for (int i = 0; i < particles_.size(); i++){
-        // Mass of particle
-        double m = particles_.at(i).m_;
+
         // Saving the state of particle i
         arma::vec v_i = particles_.at(i).v_; 
         arma::vec r_i = particles_.at(i).r_;
+        double m = particles_.at(i).m_;
 
-
-        k1 = total_force(i)/m*dt; // Excluding the mass, to lower number of calculations
+        k1 = total_force(i)/m*dt;
         
-        total_time_ += dt/2; // t_i + dt/2
+        total_time_ += dt/2; // t_i -> t_i + dt/2
 
         particles_.at(i).v_ = v_i + k1/2; // Changing v_i to v_i+(1/2)
         particles_.at(i).r_ = r_i + particles_.at(i).v_*dt/2; // Changing the position with the new velocity
@@ -230,7 +229,6 @@ void PenningTrap::evolve_RK4(double dt){
         particles_.at(i).r_ = r_i + particles_.at(i).v_*dt;
         k4 = total_force(i)/m*dt;
 
-        // Taking mass into account here
         particles_.at(i).v_ = v_i + 1./6. * (k1 + 2*k2 + 2*k3 + k4);
         particles_.at(i).r_ = particles_.at(i).v_*dt;
     }

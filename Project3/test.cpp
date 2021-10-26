@@ -4,6 +4,28 @@
 #include "PenningTrap.hpp"
 #include "TestPenningTrap.hpp"
 
+
+void test_time_dependence_and_resonance() {
+    double T = 9.64852558*10e1;
+    double V = 9.64852558*10e7; 
+
+    double B0 = 1*T;
+    double V0 = 0.0025*V;
+    double d = 500;
+
+    int q_ca = 1;
+    double m_ca = 40.08;
+
+    double tmax = 100;
+    int t_steps = 1000;
+    double dt = tmax/t_steps;
+
+    PenningTrap trap = PenningTrap(B0, V0, d);
+    
+
+}
+
+
 // To compile:
 // g++ test.cpp src/TestPenningTrap.cpp src/PenningTrap.cpp src/Particle.cpp -I include -o test.exe -larmadillo
 

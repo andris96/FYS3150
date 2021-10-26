@@ -5,6 +5,12 @@
 #include "Particle.hpp"
 #include "PenningTrap.hpp"
 
+// To build: 
+// g++ simulations_fine_scan.cpp src/Particle.cpp src/PenningTrap.cpp src/utils.cpp
+// -I include -o simulations_fine_scan.exe -larmadillo
+//
+// To run: ./simulations_fine_scan.exe
+
 int main() {
 
     // Setting parameters for the simulation

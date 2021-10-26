@@ -6,9 +6,10 @@
 #include "PenningTrap.hpp"
 #include "utils.hpp"
 
-// To compile: 
+// To build: 
 // g++ simulations.cpp src/Particle.cpp src/PenningTrap.cpp src/utils.cpp
 // -I include -o simulations.exe -larmadillo
+//
 // To run: ./simulations.exe
 
 int main()
@@ -22,10 +23,10 @@ int main()
     double m_ca = 40.08; // [u]
     arma::vec r = arma::vec(3);
     arma::vec v = arma::vec(3);
-    r << -100 << 0.0 << 10;
-    v << 0.0 << -100 << 0.0;
+    r << -1000 << 0.0 << 10;
+    v << 0.0 << -1000 << 0.0;
 
-    //parameters for the analytical solution
+    // Parameters for the analytical solution
     double x0 = r(0);
     double z0 = r(2);
     double v0 = v(1);
@@ -33,7 +34,7 @@ int main()
     Particle p_ca_1 = Particle(q_ca, m_ca, r, v);
     Particle p_ca_2 = Particle(q_ca, m_ca, -r, -v);
 
-    double tmax = 10; //100 micro seconds
+    double tmax = 100; //100 micro seconds
     int steps = 10000;
     double dt = tmax/steps;
 
@@ -58,9 +59,6 @@ int main()
         motion_z.at(i) = trap.get_particles().at(0).r().at(2);
         motion_z_analytical(i) = motion_analytical(i,2);
     }
-
-    
-
 
     motion_z.save("motion_z_RK4.txt", arma::raw_ascii);
     motion_z_analytical.save("motion_z_analytical.txt", arma::raw_ascii);
@@ -93,7 +91,7 @@ int main()
 
         for(int i = 0; i < steps; i++){
             trap.evolve_RK4(dt);
-            motion_r_1.row(i) = trap.get_particles().at(0).r().t(); // .t() : transposing col -> row
+            motion_r_1.row(i) = trap.get_particles().at(0).r().t();
             motion_v_1.row(i) = trap.get_particles().at(0).v().t();
             motion_r_2.row(i) = trap.get_particles().at(1).r().t();
             motion_v_2.row(i) = trap.get_particles().at(1).v().t();
@@ -114,7 +112,7 @@ int main()
     //--------------------------------------------------------------
     tmax = 50;
     arma::vec steps_vec = arma::vec(5);
-    steps_vec << 50 << 100 << 500 << 1000 << 5000;
+    steps_vec << 500 << 1000 << 2000 << 4000 << 8000;
 
     std::vector<std::string> methods(2);
     methods.at(0) = "rk4";

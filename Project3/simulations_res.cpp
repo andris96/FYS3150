@@ -5,7 +5,18 @@
 #include "Particle.hpp"
 #include "PenningTrap.hpp"
 
+#include <chrono> // tmp
+
+// To build: 
+// g++ simulations_res.cpp src/Particle.cpp src/PenningTrap.cpp src/utils.cpp
+// -I include -o simulations_res.exe -larmadillo
+//
+// To run: ./simulations_res.exe
+
+
 int main() {
+
+    auto start = std::chrono::high_resolution_clock::now(); // tmp
 
     // Setting parameters for the simulation
     //double k_e = 1.38935333*10e5; // Coulomb constant, [u*(\mu*m)^2 / e*(\mu*s)^2]
@@ -15,8 +26,13 @@ int main() {
     int q_ca = 1;
     double m_ca = 40.08; // [u]
 
+    // Tmp notes: 
+    // tmax=50, t_steps=1000 -> ca. 4 min 24 sec     fractions = 1.0 for all f
+    // tmax=50, t_steps=500  -> ca. 2 min 14 sec     fractions = 0.0 for all f
+    // tmax=500, t_steps=10000  -> ca. 31 min           fractions 1
+
     double tmax = 500; //500 micro seconds
-    int t_steps = 100; 
+    int t_steps = 10000; 
     double dt = tmax/t_steps;
 
     double B0 = 1*T;  // Magnetic field strength, Tesla
@@ -70,6 +86,11 @@ int main() {
 
         fractions.save("fractions_f_" + std::to_string(f).substr(0, 4) + ".txt", arma::raw_ascii);
     }
+
+
+    auto stop = std::chrono::high_resolution_clock::now(); // tmp
+    auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start);
+    std::cout << "Execution time: " << duration.count() << " seconds" << std::endl;
 
     return 0;
 }
