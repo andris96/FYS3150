@@ -211,7 +211,10 @@ void PenningTrap::evolve_RK4(double dt){
         arma::vec v_i = particles_.at(i).v_; 
         arma::vec r_i = particles_.at(i).r_;
 
+
         k1 = total_force(i)/m*dt; // Excluding the mass, to lower number of calculations
+        
+        total_time_ += dt/2; // t_i + dt/2
 
         particles_.at(i).v_ = v_i + k1/2; // Changing v_i to v_i+(1/2)
         particles_.at(i).r_ = r_i + particles_.at(i).v_*dt/2; // Changing the position with the new velocity
@@ -220,6 +223,8 @@ void PenningTrap::evolve_RK4(double dt){
         particles_.at(i).v_ = v_i + k2/2;
         particles_.at(i).r_ = r_i + particles_.at(i).v_*dt/2;
         k3 = total_force(i)/m*dt;
+
+        total_time_ -= dt/2; // reverting to t_i
 
         particles_.at(i).v_ = v_i + k3;
         particles_.at(i).r_ = r_i + particles_.at(i).v_*dt;

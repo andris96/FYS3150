@@ -34,7 +34,7 @@ int main()
     Particle p_ca_2 = Particle(q_ca, m_ca, -r, -v);
 
     double tmax = 10; //100 micro seconds
-    int steps = 5000;
+    int steps = 10000;
     double dt = tmax/steps;
 
     double B0 = 1*T;  // Magnetic field strength, Tesla
