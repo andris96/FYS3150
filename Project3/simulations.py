@@ -136,7 +136,25 @@ for filename in filenames_list:
             data_errors["analytical"][h] = np.loadtxt(filename)
 
 def compute_relative_error(num, anl):
-    """Return an array with the relative error for each time step..."""
+    """Return an array with the relative error for each time step.
+    
+    Spesific to our needs, as each loaded .txt file is an array/matrix
+    of shape (steps, 3). Need to iterate through each row in the arrays
+    and compute the relative errors..
+
+    Assuming the relative error for a vector x in terms of y is computed as,
+
+        r_error = |x-y| / |y|
+
+    Parameters
+    ----------
+    num (np.array) : Arr containing a numerical solutions, shape (steps, 3)
+    anl (np.array) : Arr containing the corrosp. analytical solutions, shape (steps, 3)
+
+    Returns
+    -------
+    error (np.array) : The computed relative error for each time step, shape (steps)
+    """
     assert(num.shape==anl.shape)
     steps = num.shape[0]
     error = np.zeros(steps)
