@@ -14,7 +14,7 @@ arma::mat solve_analytical_1p(double v0, double x0, double z0, double tmax, int 
     double dt = tmax/steps;
 
     double omega_0 = q*B0/m;
-    double omega_z_squared = 2*q*V0/m*pow(d,2);
+    double omega_z_squared = 2*q*V0/(m*pow(d,2));
     double omega_z = sqrt(omega_z_squared);
 
     double omega_pluss = 1/2*(omega_0 + sqrt(pow(omega_0,2) - 2*omega_z_squared));
