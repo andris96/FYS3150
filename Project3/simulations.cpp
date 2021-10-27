@@ -23,7 +23,7 @@ int main()
     double m_ca = 40.08; // [u]
     arma::vec r = arma::vec(3);
     arma::vec v = arma::vec(3);
-    r << -5000 << 5000 << 10;
+    r << -5000 << 0 << 10;
     v << 0.0 << -1000 << 0.0;
 
     // Parameters for the analytical solution
