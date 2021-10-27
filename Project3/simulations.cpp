@@ -23,8 +23,8 @@ int main()
     double m_ca = 40.08; // [u]
     arma::vec r = arma::vec(3);
     arma::vec v = arma::vec(3);
-    r << -1000.0 << 0.0 << 10.0;
-    v << 0.0 << -1000.0 << 0.0;
+    r << -5000 << 5000 << 10;
+    v << 0.0 << -1000 << 0.0;
 
     // Parameters for the analytical solution
     double x0 = r(0);
@@ -112,7 +112,7 @@ int main()
     //--------------------------------------------------------------
     tmax = 50;
     arma::vec steps_vec = arma::vec(5);
-    steps_vec << 500 << 1000 << 2000 << 4000 << 8000;
+    steps_vec << 50 << 100 << 250 << 500 << 1000;
 
     std::vector<std::string> methods(2);
     methods.at(0) = "rk4";
@@ -130,7 +130,10 @@ int main()
             arma::mat motion_r = arma::mat(steps_vec.at(s), 3, arma::fill::zeros);
             arma::mat motion_r_analytical = solve_analytical_1p(v0, x0, z0, tmax, 
                                                                 steps_vec.at(s), q_ca, B0, V0, m_ca, d);
-            arma::mat motion_r_diff = arma::mat(steps_vec.at(s), 3, arma::fill::zeros);
+            arma::rowvec motion_r_diff = arma::rowvec(3, arma::fill::zeros);
+
+            double delta_max = 0;
+            double norm_of_diff = 0;
 
             // Evolving the system
             dt = tmax/steps_vec.at(s);
@@ -142,11 +145,16 @@ int main()
                     trap.evolve_forward_Euler(dt);
                 }
                 motion_r.row(i) = trap.get_particles().at(0).r().t();
+
+                // Computing delta_max
+                motion_r_diff = motion_r.row(i) - motion_r_analytical.row(i);
+                norm_of_diff = arma::norm(motion_r_diff, 2);
+                if (norm_of_diff > delta_max) {
+                    delta_max = norm_of_diff;
+                }
             }
 
-            // Storing results for computing convergence rates later
-            motion_r_diff = arma::abs(motion_r_analytical - motion_r);
-            double delta_max = motion_r_diff.max();
+            // Storing for computing convergence rate
             if (methods.at(method) == "rk4") {
                 delta_max_rk4.push_back(delta_max);
                 h_vec.push_back(dt);
