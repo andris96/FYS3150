@@ -23,11 +23,15 @@ arma::mat solve_analytical_1p(double v0, double x0, double z0, double tmax, int 
     double A_pluss = (v0 + omega_minus * x0)/(omega_minus - omega_pluss);
     double A_minus = -(v0 + omega_pluss * x0)/(omega_minus - omega_pluss);
 
-    for(int i = 0; i < steps; i++){
+    motion_r(0,0) = x0;
+    motion_r(0,1) = 0.0;
+    motion_r(0,2) = z0;
+
+    for(int i = 1; i < steps; i++){
+        t += dt;
         x = A_pluss*cos(-omega_pluss*t) + A_minus*cos(-omega_minus*t);
         y = A_pluss*sin(-omega_pluss*t) + A_minus*sin(-omega_minus*t);
         z = z0*cos(omega_z*t);
-        t += dt;
         motion_r.at(i,0) = x;
         motion_r.at(i,1) = y;
         motion_r.at(i,2) = z;
