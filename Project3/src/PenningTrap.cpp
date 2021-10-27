@@ -229,7 +229,6 @@ void PenningTrap::evolve_RK4(double dt){
         particles_.at(i).r_ = r_i + particles_.at(i).v_*dt;
         k4 = total_force(i)/m*dt;
 
-        
         particles_.at(i).v_ = v_i + 1./6. * (k1 + 2*k2 + 2*k3 + k4);
         particles_.at(i).r_ = particles_.at(i).v_*dt;
     }

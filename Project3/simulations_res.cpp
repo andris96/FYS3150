@@ -32,7 +32,7 @@ int main() {
     // tmax=500, t_steps=10000  -> ca. 31 min           fractions 1
 
     double tmax = 500; //500 micro seconds
-    int t_steps = 10000; 
+    int t_steps = 1000; 
     double dt = tmax/t_steps;
 
     double B0 = 1*T;  // Magnetic field strength, Tesla

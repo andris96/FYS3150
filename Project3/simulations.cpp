@@ -90,11 +90,11 @@ int main()
         arma::mat motion_v_2(steps, 3, arma::fill::zeros);
 
         for(int i = 0; i < steps; i++){
+            trap.evolve_RK4(dt);
             motion_r_1.row(i) = trap.get_particles().at(0).r().t();
             motion_v_1.row(i) = trap.get_particles().at(0).v().t();
             motion_r_2.row(i) = trap.get_particles().at(1).r().t();
             motion_v_2.row(i) = trap.get_particles().at(1).v().t();
-            trap.evolve_RK4(dt);
         }
 
         motion_r_1.save("motion_r_1_" + interaction_mode.at(mode) + "_interactions.txt", arma::raw_ascii);

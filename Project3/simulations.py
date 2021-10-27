@@ -40,7 +40,7 @@ data_2p_system = {
 
 # Plot the motion of a single particle in the z direction as a funstion of time
 #plt.plot(t, z, label="Motion in Z direction")
-plt.plot(t, z_a, label="Motion in Z direction, analytical")
+#plt.plot(t, z_a, label="Motion in Z direction, analytical")
 plt.plot(t, z, label="Motion in Z direction, numerical")
 plt.xlabel("Time [$\mu s$]")
 plt.ylabel("Position, z [$\mu m$]")
@@ -172,9 +172,9 @@ axes = [ax1, ax2]
 for idx, method in enumerate(["euler", "rk4"]):
     for h in ["h0", "h1", "h2", "h3", "h4"]: 
         r_numerical = data_errors[method][h]   
-        #r_analytical = data_errors["analytical"][h]
-        r_analytical = np.multiply(r_numerical, np.random.random(r_numerical.shape))### Only tmp as r_analytical contains NaN..
-        diff = (r_numerical - r_analytical) / r_analytical
+        r_analytical = data_errors["analytical"][h]
+        #r_analytical = np.multiply(r_numerical, np.random.random(r_numerical.shape))### Only tmp as r_analytical contains NaN..
+        #diff = (r_numerical - r_analytical) / r_analytical
         relative_error = compute_relative_error(r_numerical, r_analytical)
 
         steps = relative_error.size

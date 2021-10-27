@@ -5,6 +5,11 @@
 #include <assert.h>
 #include <string.h>
 
+// This class contains unit tests for the class PenningTrap.
+//
+// The getters and setters were assumed to be correct, as these
+// were straight forward to implement. 
+// Not all methods were tested due to time constrains. 
 class TestPenningTrap {
 
     public:
