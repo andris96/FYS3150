@@ -3,11 +3,20 @@
 
 #include "Particle.hpp"
 #include <stdlib.h>
-
-// redundant..
 #include <vector>
 #include <armadillo>
 
+// This class contains the all things related to the Penning Trap
+//
+// Our implementation probably have some errors in the inclusion
+// of the time-dependence or in the RK4-method, possibly in both. 
+// 
+// Note: For the time-dependece, the class variable total_time_
+// acts as an internal clock for each instantiated object of
+// the class and keeps track of the elapsed system/ trap time. 
+// Hence, no parameter $time is passed to total_force(), but the 
+// the total system time is rather updated for K2 and K3
+// in RK4. 
 class PenningTrap {
 
     protected:

@@ -9,7 +9,7 @@ filenames_list = glob.glob("*.txt")
 
 fig, ax = plt.subplots(1, 1)
 for filename in filenames_list:
-    if "fractions" in filename:
+    if "fractions_f_" in filename:
         f = filename[-8:-4] # Extracting f value
         data = np.loadtxt(filename)
         omega_V, fraction = data[:, 0], data[:, 1]
