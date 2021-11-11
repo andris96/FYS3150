@@ -60,8 +60,8 @@ void IsingModel::initiate() {
     int current; int bottom; int right; // spin values
     for (int i = 0; i < L; i++) {
         for (int j = 0; j < L; j++) {
-            bottom = s(i + 1 & L, j);
-            right = s(i, j + 1 & L);
+            bottom = s(i + 1 % L, j);
+            right = s(i, j + 1 % L);
             E += (current*bottom + current*right);
         }
     }
