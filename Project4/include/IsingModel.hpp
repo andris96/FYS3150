@@ -18,6 +18,7 @@
 class IsingModel {
 
     private:
+    friend class TestIsingModel;
     int L;
     double T;
 
