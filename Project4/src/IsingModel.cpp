@@ -4,32 +4,68 @@
 IsingModel::IsingModel(int L_in, double T_in) {
     L = L_in;
     T = T_in;
-    s = generate_random_spin_config(L);
+
+    s = arma::mat(L, L);
+    E = 0;
+    M = 0;
 
     kB = 1.0; // Set proper value!!!
     beta = 1/(kB*T);
+
+    energy_map = make_energy_map(); 
 }
 
 /**
- * Generate a random (lattice) spin configuration
+ * Update the spin state s with a random configuration
  * 
- * Returns
- * -------
- * s_new (arma::mat) : A randomly generated spin configuration, shape (L, L)
+ * (...)
+ * 
  */
-arma::mat IsingModel::generate_random_spin_config(int L) {
-    arma::mat s_new = arma::mat(L, L, arma::fill::randu);
+void IsingModel::generate_random_spin_config() {
+    s = arma::mat(L, L, arma::fill::randu);
     for (int i = 0; i < L; i++) {
         for (int j = 0; j < L; j++) {
-            if (s_new(i, j) > 0.5) {
-                s_new(i, j) = 1;
+            if (s(i, j) > 0.5) {
+                s(i, j) = 1;
             }
             else {
-                s_new(i, j) = -1;
+                s(i, j) = -1;
             }
         }
     }
+}
 
+/**
+ * Initiate with a new spin configuration and compute the associated energy and magnetization
+ * 
+ * (...)
+ * 
+ * To avoid double counting of spin-pairs when computing the system energy, only the spin pairs
+ * current<->right and current<->bottom are considered for site (i,j). Boundary conditions are taken
+ * into consideration by the modulo operations.
+ * 
+ *  |c|  |r|   o    o
+ *  
+ *  |b|   o    o    o
+ * 
+ *   o    o    o    o
+ * 
+ *   o    o    o    o 
+ * 
+ */
+void IsingModel::initiate() {
+    generate_random_spin_config();
+    M = arma::accu(s);
+    E = 0;
+    int current; int bottom; int right; // spin values
+    for (int i = 0; i < L; i++) {
+        for (int j = 0; j < L; j++) {
+            bottom = s(i + 1 & L, j);
+            right = s(i, j + 1 & L);
+            E += (current*bottom + current*right);
+        }
+    }
+    E = -E;
 }
 
 // Flip the spin at lattice site (i,j)
@@ -117,34 +153,30 @@ std::map<int, double> IsingModel::make_energy_map() {
 }
 
 /**
- * Run a single Monte Carlo cycle
+ * Metropolis acceptance steps: run a single Monte Carlo cycle
  * 
  * ... (Detailed docstring..)
  * 
  * Params
  * ------
- * N (int) : The number of repitations
- * outputFileName (std::string) : Name of the .txt-file in which the results are stored
- * 
+ * max_trials (int) : The maxium number of trials to search for state with lower energy
  */
-void IsingModel::run_MCMC(int max_trials, std::string outputFileName) {
-
-    // Create the energy map in order to avoid computing exp(.) in the loops
-    std::map<int, double> energy_map = make_energy_map();
-
-    int i;
-    int j;
-    arma::mat results = arma::mat(max_trials, 4);
-    for (int trial = 0; trial < max_trials; trial++) 
+void IsingModel::metropolis(int max_trials, std::map<int, double> energy_map) {
+    int i; int j;
+    int deltaE;
+    for (int trial = 0; trial < max_trials; trial++) {
 
         // Pick random spin site from the lattice and flip it
         i = std::rand() % L;
         j = std::rand() % L;
         flip_spin(i, j);
 
-        // Compute the energy difference due to the spin flip and 
-        // the ratio p(s_after)/(p_s_before)
-        int deltaE = compute_energy_diff_due_to_flip(i, j);
+        // Compute the energy difference due to the spin flip and ratio, but 
+        // accept the new state immediately if deltaE <= 0
+        deltaE = compute_energy_diff_due_to_flip(i, j);
+        if (deltaE <= 0) {
+            break;
+        }
         double ratio = energy_map[deltaE];
 
         // Acceptance step: 
@@ -153,14 +185,70 @@ void IsingModel::run_MCMC(int max_trials, std::string outputFileName) {
         if (r >= ratio) {
             flip_spin(i, j);
         }
+    } // end for-loop
 
-        // Compute relavant quantities...
-        // ...
-        // ...
+    // Update energy and magnetization
+    E += deltaE;
+    M += 2*s(i, j); // why x2? (copied the updating procedure in the compendium..)
+}
 
-        // Store the results in the matrix $results
-        // ... 
-        // ...
-        // ...
+/**
+ * Monte Carlo computaion.. stores values for relavant quantities...
+ * 
+ * (Detailed docstring..)
+ * 
+ * Params
+ * ------
+ * max_cycle (int) : The maximum number of cycles to search for a stationary state..(?)
+ * max_trials (int) : The maximum number of trials to search for a state with lower energy
+ * results (arma::vec) : Vector for storing results, taken as a reference, shape (5, 1).
+ *      The format is [E, E*E, M, M*M, |M|]. 
+ */
+void IsingModel::monte_carlo(int max_cycles, int max_trials, arma::vec &results) {
+    initiate();
+    for (int cycle = 0; cycle < max_cycles; cycle++) {
+
+        // Search for a lower energy state..
+        metropolis(max_trials, energy_map);
+
+        // Store the relavant quantities
+        results(0) += E;
+        results(1) += E*E;
+        results(2) += M;
+        results(3) += M*M;
+        results(4) += abs(M);
     }
+}
+
+/**
+ * Estimate relavant quantities...
+ * 
+ * (...)
+ * 
+ * Params
+ * ------
+ * max_cycle (int) : The maximum number of cycles to search for a stationary state..(?)
+ * max_trials (int) : The maximum number of trials to search for a state with lower energy..(?)
+ */
+void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials) {
+    arma::vec results = arma::vec(5, arma::fill::zeros);
+    monte_carlo(max_cycles, max_trials, results);
+
+    // Total number of spins
+    int N = L*L;
+
+    // Compute expectation values per spin
+    double mean_e = results(0)/max_cycles/N;
+    double mean_e2 = results(1)/max_cycles/N;
+    double mean_m = results(2)/max_cycles/N;
+    double mean_m2 = results(3)/max_cycles/N;
+    double mean_m_abs = results(4)/max_cycles/N;
+
+    // Compute specific heat capacity Cv and magnetic susceptibility X per spin
+    double Cv = beta * (mean_e2 - mean_e*mean_e);
+    double X = beta * (mean_m2 - mean_m*mean_m);
+
+    // Do something more... print to terminal ... save to file for later plotting etc.. 
+    // ...
+    // ...
 }

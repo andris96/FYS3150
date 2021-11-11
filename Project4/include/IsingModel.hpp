@@ -6,22 +6,39 @@
 #include <armadillo>
 #include <map>
 
+/**
+ * Class for ...
+ * 
+ * (Detailed docstring..)
+ * 
+ * (The structure is partly based on the program/script at p. 436-437 in the compendium/ document p. 448-449)
+ * 
+ * 
+ */
 class IsingModel {
 
     private:
     int L;
     double T;
+
     arma::mat s;
+    double E;
+    double M;
 
     double kB;
     double beta;
+
+    std::map<int, double> energy_map;
 
     public:
     // Constructor
     IsingModel(int L_in, double T_in);
 
-    // Generate a random spin configuration
-    arma::mat generate_random_spin_config(int L);
+    // Update the spin state with a random configuration
+    void generate_random_spin_config();
+
+    // Initiate with a new spin configuration and compute the associated energy and magnetization
+    void initiate();
 
     // Flip the spin at lattice site (i,j)
     void flip_spin(int i, int j);
@@ -32,10 +49,14 @@ class IsingModel {
     // Compute the map from deltaE to exp(-B*deltaE)
     std::map<int, double> make_energy_map();
 
-    // Run a MC cycle using Markov Chains
-    void run_MCMC(int N, std::string outputFileName);
+    // Metropolis/ acceptance step: find a new state with lower E
+    void metropolis(int max_trials, std::map<int, double> energy_map);
 
+    // Monte Carlo computations...
+    void monte_carlo(int max_cycles, int max_trials, arma::vec &results);
 
+    // Estimate relavant quantities...
+    void estimate_quantites_with_MCMC(int max_cycles, int max_trials);
 
 };
 
