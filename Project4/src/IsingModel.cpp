@@ -89,9 +89,9 @@ int IsingModel::compute_energy_diff_due_to_flip(int i, int j) {
 
     // Extract spin values for the neighbourhood, with periodic BC taken into consideration
     int top = s(i - 1 % L, j);
-    int bottom = s(i + 1 & L, j);
+    int bottom = s(i + 1 % L, j);
     int left = s(i, j - 1 % L);
-    int right = s(i, j + 1 & L);
+    int right = s(i, j + 1 % L);
 
     // Compute energy contributions from the local neighbourhooud and return the difference
     int energy_before = -(site_before*top + site_before*bottom + site_before*left + site_before*right);

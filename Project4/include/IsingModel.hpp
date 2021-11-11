@@ -9,6 +9,7 @@
 class IsingModel {
 
     private:
+    friend class TestIsingModel;
     int L;
     double T;
     arma::mat s;
