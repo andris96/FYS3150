@@ -24,13 +24,13 @@ double TestIsingModel::m_squared_expectation(double beta){
     return m_sq;
 }
 
-double TestIsingModel::Cv(double beta, double T){
+double TestIsingModel::Cv(double beta, double T, int N){
     double kB = 1; // should get this from IsingModel somehow
-    double Cv = 1/(kB*T*T) * 16*exp(8*beta);
+    double Cv = beta/(T*N) * 16*exp(8*beta);
     return Cv;
 }
 
-double TestIsingModel::khi(double beta, double T){
-    double khi = beta*(2*(exp(8*beta) + 1)/Partition(beta));
+double TestIsingModel::khi(double beta, int N){
+    double khi = beta/N*(2*(exp(8*beta) + 1));
     return khi;
 }

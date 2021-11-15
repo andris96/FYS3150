@@ -13,8 +13,8 @@ class TestIsingModel{
     double TestIsingModel::Partition(double beta);
     double TestIsingModel::epsilon_squared_expectation(double beta);
     double TestIsingModel::m_squared_expectation(double beta);
-    double TestIsingModel::Cv(double beta, double T);
-    double TestIsingModel::khi(double beta, double T);
+    double TestIsingModel::Cv(double beta, double T, int N);
+    double TestIsingModel::khi(double beta, int N);
 
 };
 

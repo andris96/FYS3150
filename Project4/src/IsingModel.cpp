@@ -189,7 +189,7 @@ void IsingModel::metropolis(int max_trials, std::map<int, double> energy_map) {
 
     // Update energy and magnetization
     E += deltaE;
-    M += 2*s(i, j); // why x2? (copied the updating procedure in the compendium..)
+    M += 2*s(i, j); // Magnetization changes by either +2 or -2
 }
 
 /**
@@ -238,15 +238,19 @@ void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials) {
     int N = L*L;
 
     // Compute expectation values per spin
-    double mean_e = results(0)/max_cycles/N;
-    double mean_e2 = results(1)/max_cycles/N;
-    double mean_m = results(2)/max_cycles/N;
-    double mean_m2 = results(3)/max_cycles/N;
+    double mean_E = results(0)/max_cycles; 
+    double mean_e = mean_E/N;
+    double mean_E2 = results(1)/max_cycles;
+    double mean_e2 = mean_E2/N;
+    double mean_M = results(2)/max_cycles;
+    double mean_m = mean_M/N;
+    double mean_M2 = results(3)/max_cycles;
+    double mean_m2 = mean_M2/N;
     double mean_m_abs = results(4)/max_cycles/N;
 
     // Compute specific heat capacity Cv and magnetic susceptibility X per spin
-    double Cv = beta * (mean_e2 - mean_e*mean_e);
-    double X = beta * (mean_m2 - mean_m*mean_m);
+    double Cv = beta/(N*T) * (mean_E2 - mean_E*mean_E);
+    double X = beta/N * (mean_M2 - mean_M*mean_M);
 
     // Do something more... print to terminal ... save to file for later plotting etc.. 
     // ...
