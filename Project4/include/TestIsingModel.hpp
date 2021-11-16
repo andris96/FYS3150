@@ -7,14 +7,17 @@ class TestIsingModel{
     //don't need anything that isn't already in IsingModel yet
 
     public:
-    TestIsingModel::TestIsingModel(); // Empty constructor
+    TestIsingModel(); // Empty constructor
 
-    //calculating the different analytical solutions
-    double TestIsingModel::Partition(double beta);
-    double TestIsingModel::epsilon_squared_expectation(double beta);
-    double TestIsingModel::m_squared_expectation(double beta);
-    double TestIsingModel::Cv(double beta, double T, int N);
-    double TestIsingModel::khi(double beta, int N);
+    // Calculating the different analytical solutions
+    double Partition(double beta);
+    double epsilon_squared_expectation(double beta);
+    double m_squared_expectation(double beta);
+    double Cv(double beta, double T, int N);
+    double khi(double beta, int N);
+
+    // Methods for testing member methods of class IsingModel
+    void generate_random_spin_config();
 
 };
 
