@@ -85,6 +85,12 @@ void IsingModel::initiate() {
     E *= -1;
 }
 
+// Set a spin config
+void IsingModel::set_s(arma::Mat<int> s_in) {
+    assert((s_in.n_rows == L) && (s_in.n_cols == L));
+    s = s_in;
+}
+
 // Flip the spin at lattice site (i,j)
 void IsingModel::flip_spin(int i, int j) {
     s(i, j) *= -1;
@@ -187,6 +193,7 @@ void IsingModel::metropolis(int max_trials, std::map<int, double> energy_map) {
         i = int(rand_uniform()*10*L) % L; //std::rand() % L;
         j = int(rand_uniform()*10*L) % L;//std::rand() % L;
         flip_spin(i, j);
+        std::cout << "Spin flipped.." << std::endl; // <---tmp
 
         // Compute the energy difference due to the spin flip and ratio, but 
         // accept the new state immediately if deltaE <= 0
@@ -195,6 +202,8 @@ void IsingModel::metropolis(int max_trials, std::map<int, double> energy_map) {
             break;
         }
         double ratio = energy_map[deltaE];
+
+        std::cout << "Computed diff.." << std::endl; // <---tmp
 
         // Acceptance step: 
         // reject if r >= ratio, that is revert to previous state, ie. flip back the spin at (i,j)

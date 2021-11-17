@@ -8,6 +8,7 @@ void TestIsingModel::run_all_tests() {
     TestIsingModel::test_generate_random_spin_config();
     TestIsingModel::test_rand_uniform();
     TestIsingModel::test_initiate();
+    TestIsingModel::test_compute_energy_diff_due_to_flip();
 }
 
 //Don't know how to get the variables from TestIsingModel
@@ -141,5 +142,32 @@ void TestIsingModel::test_initiate() {
     }
     E_num *= -1;
     assert((E_num == 2) && ("The total energy is not correct!"));
+}
 
+/**
+ * Test that the computed energy difference due to a single spin flip is correct
+ * 
+ * Using the same test spin config. as in test_initiate()
+ * 
+ * s =  1   1   1    -->  s' =  1   1   1
+ *      1  -1  -1               1  +1  -1
+ *     -1   1   1              -1   1   1
+ * 
+ * The energy difference should due to the spin flip at (1,1) 
+ * should be deltaE = after - before = (-2) - (+2) = -4
+ * 
+ */
+void TestIsingModel::test_compute_energy_diff_due_to_flip() {
+    int L = 3;
+    arma::Mat<int> s = arma::Mat<int>(L, L, arma::fill::ones);
+    s(1, 1) = -1;
+    s(1, 2) = -1;
+    s(2, 0) = -1;
+
+    IsingModel L3 = IsingModel(L, 1.0);
+    L3.set_s(s);
+    L3.s(1,1) *= -1; // flip spin
+
+    int deltaE_num = L3.compute_energy_diff_due_to_flip(1, 1);
+    assert((deltaE_num == -4) && ("The computed energy diff. due to a single spin flip is not correct!"));
 }

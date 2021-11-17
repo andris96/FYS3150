@@ -5,6 +5,7 @@
 #include <string.h>
 #include <random>
 #include <chrono>
+#include <assert.h>
 #include <armadillo>
 #include <map>
 
@@ -42,6 +43,9 @@ class IsingModel {
 
     // Update the spin state with a random configuration
     void generate_random_spin_config();
+
+    // Setters (only for testing purposes)
+    void set_s(arma::Mat<int> s_in);
 
     // Initiate with a new spin configuration and compute the associated energy and magnetization
     void initiate();

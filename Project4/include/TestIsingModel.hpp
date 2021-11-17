@@ -27,6 +27,7 @@ class TestIsingModel{
     void test_rand_uniform();
     void test_generate_random_spin_config();
     void test_initiate();
+    void test_compute_energy_diff_due_to_flip();
 
 };
 
