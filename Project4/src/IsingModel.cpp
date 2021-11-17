@@ -58,7 +58,7 @@ void IsingModel::generate_random_spin_config() {
  * 
  * To avoid double counting of spin-pairs when computing the system energy, only the spin pairs
  * current<->right and current<->bottom are considered for site (i,j). Boundary conditions are taken
- * into consideration by the modulo operations.
+ * into consideration by the modulo operations. 
  * 
  *  |c|  |r|   o    o
  *  
@@ -67,6 +67,12 @@ void IsingModel::generate_random_spin_config() {
  *   o    o    o    o
  * 
  *   o    o    o    o 
+ * 
+ * Note on the use of modulo operators
+ * -----------------------------------
+ * As we only are considering the neighbours below and to the right, we will not get any cases where
+ * the modulo operator is used on negative numbers, hence no additional complications are needed as in 
+ * compute_energy_diff_due_to_flip().
  * 
  */
 void IsingModel::initiate() {
@@ -130,6 +136,15 @@ void IsingModel::flip_spin(int i, int j) {
  * tells us how much the system energy has changed from the previous state/ lattice spin
  * config.
  * 
+ * Note on the use of modulo operators
+ * -----------------------------------
+ * Due to how the % operator is implemented in C++, taking the modulo of a negative number
+ * will yield a negative number, which is not what we want in order to include periodic 
+ * boundary conditionds. So instead of taking a % b we need to take (b + (a%b)) % b. 
+ * 
+ * Source:
+ * https://stackoverflow.com/questions/7594508/modulo-operator-with-negative-values
+ * 
  * ...
  * 
  * params
@@ -147,9 +162,9 @@ int IsingModel::compute_energy_diff_due_to_flip(int i, int j) {
     int site_after = s(i, j);
 
     // Extract spin values for the neighbourhood, with periodic BC taken into consideration
-    int top = s((i - 1) % L, j);
+    int top = s((L + ((i - 1)%L)) % L, j); // In ordinary math notation: s(i-1 % L, j)
     int bottom = s((i + 1) % L, j);
-    int left = s(i, (j - 1) % L);
+    int left = s(i, (L + ((j - 1)%L)) % L); // s(i, j-1 % L)
     int right = s(i, (j + 1) % L);
 
     // Compute energy contributions from the local neighbourhooud and return the difference
@@ -193,7 +208,6 @@ void IsingModel::metropolis(int max_trials, std::map<int, double> energy_map) {
         i = int(rand_uniform()*10*L) % L; //std::rand() % L;
         j = int(rand_uniform()*10*L) % L;//std::rand() % L;
         flip_spin(i, j);
-        std::cout << "Spin flipped.." << std::endl; // <---tmp
 
         // Compute the energy difference due to the spin flip and ratio, but 
         // accept the new state immediately if deltaE <= 0
@@ -202,8 +216,6 @@ void IsingModel::metropolis(int max_trials, std::map<int, double> energy_map) {
             break;
         }
         double ratio = energy_map[deltaE];
-
-        std::cout << "Computed diff.." << std::endl; // <---tmp
 
         // Acceptance step: 
         // reject if r >= ratio, that is revert to previous state, ie. flip back the spin at (i,j)
