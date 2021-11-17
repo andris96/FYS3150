@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <random>
+#include <chrono>
 #include <armadillo>
 #include <map>
 
@@ -22,7 +24,7 @@ class IsingModel {
     int L;
     double T;
 
-    arma::mat s;
+    arma::Mat<int> s;
     double E;
     double M;
 
@@ -34,6 +36,9 @@ class IsingModel {
     public:
     // Constructor
     IsingModel(int L_in, double T_in);
+
+    // Random number generators with system clock as seed
+    double rand_uniform();
 
     // Update the spin state with a random configuration
     void generate_random_spin_config();

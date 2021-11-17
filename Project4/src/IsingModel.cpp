@@ -5,7 +5,7 @@ IsingModel::IsingModel(int L_in, double T_in) {
     L = L_in;
     T = T_in;
 
-    s = arma::mat(L, L);
+    s = arma::Mat<int>(L, L);
     E = 0;
     M = 0;
 
@@ -16,19 +16,35 @@ IsingModel::IsingModel(int L_in, double T_in) {
 }
 
 /**
+ * Random number generator drawn from a uniform distrution using system clock as seed
+ * 
+ * Adapted from: https://github.com/anderkve/FYS3150/blob/master/code_examples/random_number_generation/main_minimal.cpp
+ * (...)
+ */
+double IsingModel::rand_uniform() {
+    unsigned int seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::mt19937 generator;
+    generator.seed(seed);
+    std::uniform_real_distribution<double> my_distribution(0.0, 1.0);
+    return my_distribution(generator);
+}
+
+/**
  * Update the spin state s with a random configuration
+ * 
+ * The matrix s is initiated with all ones, and then each elem
+ * if flipped with an equal probability. 
  * 
  * (...)
  * 
  */
 void IsingModel::generate_random_spin_config() {
-    s = arma::mat(L, L, arma::fill::randu);
+    s = arma::Mat<int>(L, L, arma::fill::ones);
+    double r;
     for (int i = 0; i < L; i++) {
         for (int j = 0; j < L; j++) {
-            if (s(i, j) > 0.5) {
-                s(i, j) = 1;
-            }
-            else {
+            r = rand_uniform();
+            if (r > 0.50) {
                 s(i, j) = -1;
             }
         }
@@ -167,8 +183,8 @@ void IsingModel::metropolis(int max_trials, std::map<int, double> energy_map) {
     for (int trial = 0; trial < max_trials; trial++) {
 
         // Pick random spin site from the lattice and flip it
-        i = std::rand() % L;
-        j = std::rand() % L;
+        i = int(rand_uniform()*10*L) % L; //std::rand() % L;
+        j = int(rand_uniform()*10*L) % L;//std::rand() % L;
         flip_spin(i, j);
 
         // Compute the energy difference due to the spin flip and ratio, but 
@@ -181,7 +197,7 @@ void IsingModel::metropolis(int max_trials, std::map<int, double> energy_map) {
 
         // Acceptance step: 
         // reject if r >= ratio, that is revert to previous state, ie. flip back the spin at (i,j)
-        double r = std::rand() % 1;
+        double r = rand_uniform();
         if (r >= ratio) {
             flip_spin(i, j);
         }
@@ -246,13 +262,16 @@ void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials) {
     double mean_m = mean_M/N;
     double mean_M2 = results(3)/max_cycles;
     double mean_m2 = mean_M2/N;
-    double mean_m_abs = results(4)/max_cycles/N;
+    double mean_M_abs = results(4)/max_cycles;
+    double mean_m_abs = mean_M_abs/N;
 
     // Compute specific heat capacity Cv and magnetic susceptibility X per spin
     double Cv = beta/(N*T) * (mean_E2 - mean_E*mean_E);
-    double X = beta/N * (mean_M2 - mean_M*mean_M);
+    double X = beta/N * (mean_M2 - mean_M_abs*mean_M_abs);
 
     // Do something more... print to terminal ... save to file for later plotting etc.. 
-    // ...
-    // ...
+    // 
+    std::cout << "<e>: " << mean_e << std::endl;
+    std::cout << "<|m|>: " << mean_M_abs << std::endl;
+
 }
