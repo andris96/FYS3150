@@ -202,12 +202,15 @@ std::map<int, double> IsingModel::make_energy_map() {
  * 
  * Params
  * ------
- * max_trials (int) : The maxium number of trials to search for state with lower energy
+ * max_trials (int) : The maximum number of trials to search for state with lower energy
  */
-void IsingModel::metropolis(int max_trials, std::map<int, double> energy_map) {
+void IsingModel::metropolis(int max_trials) {
     int i; int j;
     int deltaE;
     for (int trial = 0; trial < max_trials; trial++) {
+
+        // s.print();
+        // std::cout << "\nE = " << E << "\n";
 
         // Pick random spin site from the lattice and flip it
         i = int(rand_uniform()*10*L) % L; //std::rand() % L;
@@ -217,9 +220,10 @@ void IsingModel::metropolis(int max_trials, std::map<int, double> energy_map) {
         // Compute the energy difference due to the spin flip and ratio, but 
         // accept the new state immediately if deltaE <= 0
         deltaE = compute_energy_diff_due_to_flip(i, j);
-        if (deltaE <= 0) {
-            break;
-        }
+        // if (deltaE <= 0) {
+        //     accepted = true;
+        //     break;
+        // }
         double ratio = energy_map[deltaE];
 
         // Acceptance step: 
@@ -228,11 +232,12 @@ void IsingModel::metropolis(int max_trials, std::map<int, double> energy_map) {
         if (r >= ratio) {
             flip_spin(i, j);
         }
-    } // end for-loop
-
-    // Update energy and magnetization
-    E += deltaE;
-    M += 2*s(i, j); // Magnetization changes by either +2 or -2
+        else {
+            // Update energy and magnetization'
+            E += deltaE; //
+            M += 2*s(i, j); // Magnetization changes by either +2 or -2
+        }
+    }
 }
 
 /**
@@ -251,8 +256,8 @@ void IsingModel::monte_carlo(int max_cycles, int max_trials, arma::vec &results)
     initiate();
     for (int cycle = 0; cycle < max_cycles; cycle++) {
 
-        // Search for a lower energy state..
-        metropolis(max_trials, energy_map);
+        // Search for a lower energy/ higher probability state..
+        metropolis(max_trials);
 
         // Store the relavant quantities
         results(0) += E;
@@ -299,7 +304,9 @@ void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials) {
     // Do something more... print to terminal ... save to file for later plotting etc.. 
     // 
     std::cout << "<e>: " << mean_e << std::endl;
-    std::cout << "<|m|>: " << mean_M_abs << std::endl;
+    std::cout << "<e^2>: " << mean_e2 << std::endl;
+    std::cout << "<|m|>: " << mean_m_abs << std::endl;
+    std::cout << "<m^2>: " << mean_m2 << std::endl;
     std::cout << "Cv: " << Cv << std::endl;
     std::cout << "X: " << X << std::endl;
 

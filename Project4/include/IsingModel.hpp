@@ -63,7 +63,7 @@ class IsingModel {
     std::map<int, double> make_energy_map();
 
     // Metropolis/ acceptance step: find a new state with lower E
-    void metropolis(int max_trials, std::map<int, double> energy_map);
+    void metropolis(int max_trials);
 
     // Monte Carlo computations...
     void monte_carlo(int max_cycles, int max_trials, arma::vec &results);
