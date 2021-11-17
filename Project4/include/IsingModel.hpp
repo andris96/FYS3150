@@ -47,6 +47,9 @@ class IsingModel {
     // Setters (only for testing purposes)
     void set_s(arma::Mat<int> s_in);
 
+    // Getters
+    double get_Kb();
+
     // Initiate with a new spin configuration and compute the associated energy and magnetization
     void initiate();
 

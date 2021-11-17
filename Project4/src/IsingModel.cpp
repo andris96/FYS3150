@@ -97,6 +97,11 @@ void IsingModel::set_s(arma::Mat<int> s_in) {
     s = s_in;
 }
 
+// Get the boltzmann constant
+double IsingModel::get_Kb() {
+    return kB;
+}
+
 // Flip the spin at lattice site (i,j)
 void IsingModel::flip_spin(int i, int j) {
     s(i, j) *= -1;
@@ -275,7 +280,7 @@ void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials) {
     // Total number of spins
     int N = L*L;
 
-    // Compute expectation values per spin
+    // Compute expectation values
     double mean_E = results(0)/max_cycles; 
     double mean_e = mean_E/N;
     double mean_E2 = results(1)/max_cycles;
@@ -295,5 +300,7 @@ void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials) {
     // 
     std::cout << "<e>: " << mean_e << std::endl;
     std::cout << "<|m|>: " << mean_M_abs << std::endl;
+    std::cout << "Cv: " << Cv << std::endl;
+    std::cout << "X: " << X << std::endl;
 
 }
