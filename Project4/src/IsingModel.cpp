@@ -76,12 +76,13 @@ void IsingModel::initiate() {
     int current; int bottom; int right; // spin values
     for (int i = 0; i < L; i++) {
         for (int j = 0; j < L; j++) {
-            bottom = s(i + 1 % L, j);
-            right = s(i, j + 1 % L);
+            current = s(i, j);
+            bottom = s((i + 1) % L, j);
+            right = s(i, (j + 1) % L);
             E += (current*bottom + current*right);
         }
     }
-    E = -E;
+    E *= -1;
 }
 
 // Flip the spin at lattice site (i,j)
@@ -140,10 +141,10 @@ int IsingModel::compute_energy_diff_due_to_flip(int i, int j) {
     int site_after = s(i, j);
 
     // Extract spin values for the neighbourhood, with periodic BC taken into consideration
-    int top = s(i - 1 % L, j);
-    int bottom = s(i + 1 % L, j);
-    int left = s(i, j - 1 % L);
-    int right = s(i, j + 1 % L);
+    int top = s((i - 1) % L, j);
+    int bottom = s((i + 1) % L, j);
+    int left = s(i, (j - 1) % L);
+    int right = s(i, (j + 1) % L);
 
     // Compute energy contributions from the local neighbourhooud and return the difference
     int energy_before = -(site_before*top + site_before*bottom + site_before*left + site_before*right);
