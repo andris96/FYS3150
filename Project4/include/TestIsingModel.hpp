@@ -1,6 +1,10 @@
 #ifndef __TestIsingModel_hpp__
 #define __TestIsingModel_hpp__
 
+#include "IsingModel.hpp"
+#include <armadillo>
+#include <assert.h>
+
 class TestIsingModel{
     private:
     //This class is a friend class of IsingModel
@@ -8,6 +12,9 @@ class TestIsingModel{
 
     public:
     TestIsingModel(); // Empty constructor
+
+    // Run all test
+    void run_all_tests();
 
     // Calculating the different analytical solutions
     double Partition(double beta);
@@ -17,7 +24,9 @@ class TestIsingModel{
     double khi(double beta, int N);
 
     // Methods for testing member methods of class IsingModel
-    void generate_random_spin_config();
+    void test_rand_uniform();
+    void test_generate_random_spin_config();
+    void test_initiate();
 
 };
 
