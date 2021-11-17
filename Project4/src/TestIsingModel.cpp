@@ -21,6 +21,12 @@ double TestIsingModel::Partition(double beta){
     return Z;
 }
 
+double TestIsingModel::epsilon_expectation(double beta){
+    double eps = (-4*exp(8*beta)+4*exp(-8*beta))/Partition(beta); 
+    //could make this less computational by having Partition(beta) saved as a constant somehow
+    return eps;
+}
+
 double TestIsingModel::epsilon_squared_expectation(double beta){
     double eps_sq = 16*exp(8*beta)/Partition(beta); 
     //could make this less computational by having Partition(beta) saved as a constant somehow
@@ -52,7 +58,6 @@ double TestIsingModel::khi(double beta, int N){
  * Check that each call return value in [0.0, 1.0]
  * 
  * (How to properly test that the seed is different? Can't be done from same main() call...)
- * 
  */
 void TestIsingModel::test_rand_uniform() {
     int L = 2;
