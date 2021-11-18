@@ -17,35 +17,55 @@ void TestIsingModel::run_all_tests() {
 // Methods for comparing against analytical for 2x2 lattice
 // ########################################################
 double TestIsingModel::Partition(double beta){
-    double Z = 4*exp(8*beta) + 12;
+    double Z = 2*exp(8*beta) + 12 + 2*exp(-8*beta);
     return Z;
 }
 
-double TestIsingModel::epsilon_expectation(double beta){
-    double eps = (-4*exp(8*beta)+4*exp(-8*beta))/Partition(beta); 
+double TestIsingModel::epsilon_expectation(double beta, double N){
+    double eps = (-16*exp(8*beta)+16*exp(-8*beta))/(N*Partition(beta)); 
     //could make this less computational by having Partition(beta) saved as a constant somehow
     return eps;
 }
 
-double TestIsingModel::epsilon_squared_expectation(double beta){
-    double eps_sq = 16*exp(8*beta)/Partition(beta); 
+double TestIsingModel::epsilon_squared_expectation(double beta, double N){
+    double eps_sq = (128*exp(8*beta) + 128*exp(-8*beta))/(N*Partition(beta)); 
     //could make this less computational by having Partition(beta) saved as a constant somehow
     return eps_sq;
 }
 
-double TestIsingModel::m_squared_expectation(double beta){
-    double m_sq = (2*exp(8*beta)+4)/Partition(beta);
+double TestIsingModel::m_squared_expectation(double beta, double N){
+    double m_sq = (32*exp(8*beta)+32)/(N*Partition(beta));
     return m_sq;
+}
+
+double TestIsingModel::E_expectation(double beta){
+    double E = (-16*exp(8*beta) + 16*exp(-8*beta))/Partition(beta);
+    return E;
+}
+
+double TestIsingModel::E_squared_expectation(double beta){
+    double E_sq = (128*exp(8*beta) + 128*exp(-8*beta))/Partition(beta);
+    return E_sq;
+}
+
+double TestIsingModel::M_squared_expectation(double beta){
+    double M_sq = (32*exp(8*beta)+32)/Partition(beta);
+    return M_sq;
+}
+
+double TestIsingModel::M_abs_expectation(double beta){
+    double M_abs = (8*exp(8*beta)+16)/Partition(beta);
+    return M_abs;
 }
 
 double TestIsingModel::Cv(double beta, double T, int N){
     double kB = 1; // should get this from IsingModel somehow
-    double Cv = beta/(T*N) * 16*exp(8*beta);
+    double Cv = beta/(T*N) * (E_squared_expectation(beta) - (E_expectation(beta)*E_expectation(beta)));
     return Cv;
 }
 
 double TestIsingModel::khi(double beta, int N){
-    double khi = beta/N*(2*(exp(8*beta) + 1));
+    double khi = beta/N * (M_squared_expectation(beta) - (M_abs_expectation(beta)*M_abs_expectation(beta)));
     return khi;
 }
 

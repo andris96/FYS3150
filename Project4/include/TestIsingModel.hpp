@@ -18,9 +18,13 @@ class TestIsingModel{
 
     // Calculating the different analytical solutions
     double Partition(double beta);
-    double epsilon_squared_expectation(double beta);
-    double epsilon_expectation(double beta);
-    double m_squared_expectation(double beta);
+    double epsilon_squared_expectation(double beta, double N);
+    double epsilon_expectation(double beta, double N);
+    double m_squared_expectation(double beta, double N);
+    double E_expectation(double beta);
+    double E_squared_expectation(double beta);
+    double M_squared_expectation(double beta);
+    double M_abs_expectation(double beta);
     double Cv(double beta, double T, int N);
     double khi(double beta, int N);
 

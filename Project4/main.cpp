@@ -18,7 +18,7 @@ int main() {
 
     // Set params
     double T = 1.6;
-    int L = 5;
+    int L = 2;
     int N = L*L;
     double beta = 1./T;
 
@@ -37,9 +37,9 @@ int main() {
     L2.estimate_quantites_with_MCMC(max_cycles, max_trials);
 
     // Analytical for 2x2
-    std::cout << "\n<e> analytical: " << analytical.epsilon_expectation(beta) << std::endl;
-    std::cout << "<e^2> analytical: " << analytical.epsilon_squared_expectation(beta) << std::endl;
-    std::cout << "<m^2> analytical: " << analytical.m_squared_expectation(beta) << std::endl;
+    std::cout << "\n<e> analytical: " << analytical.epsilon_expectation(beta,N) << std::endl;
+    std::cout << "<e^2> analytical: " << analytical.epsilon_squared_expectation(beta,N) << std::endl;
+    std::cout << "<m^2> analytical: " << analytical.m_squared_expectation(beta,N) << std::endl;
     std::cout << "Cv analytical: " << analytical.Cv(beta, T,  N) << std::endl;
     std::cout << "X analytical: " << analytical.khi(beta, N) << std::endl;
 
