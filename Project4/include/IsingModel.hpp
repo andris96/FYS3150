@@ -44,6 +44,9 @@ class IsingModel {
     // Update the spin state with a random configuration
     void generate_random_spin_config();
 
+    // Update the spin state with an ordered configuration
+    void generate_ordered_spin_config();
+
     // Setters (only for testing purposes)
     void set_s(arma::Mat<int> s_in);
 
@@ -51,7 +54,7 @@ class IsingModel {
     double get_Kb();
 
     // Initiate with a new spin configuration and compute the associated energy and magnetization
-    void initiate();
+    void initiate(bool random);
 
     // Flip the spin at lattice site (i,j)
     void flip_spin(int i, int j);
@@ -66,10 +69,12 @@ class IsingModel {
     void metropolis(int max_trials);
 
     // Monte Carlo computations...
-    void monte_carlo(int max_cycles, int max_trials, arma::vec &results);
+    // If random == true, it generates a random spin configuration
+    // If random == false, it generates an ordered configuration
+    void monte_carlo(int max_cycles, int max_trials, arma::vec &results, bool random);
 
     // Estimate relavant quantities...
-    void estimate_quantites_with_MCMC(int max_cycles, int max_trials);
+    void estimate_quantites_with_MCMC(int max_cycles, int max_trials, bool random);
 
 };
 

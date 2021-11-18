@@ -21,6 +21,7 @@ int main() {
     int L = 2;
     int N = L*L;
     double beta = 1./T;
+    bool random = true;
 
     // User input
     int max_trials, max_cycles;
@@ -34,7 +35,7 @@ int main() {
     IsingModel L2(L, T);
     TestIsingModel analytical;
 
-    L2.estimate_quantites_with_MCMC(max_cycles, max_trials);
+    L2.estimate_quantites_with_MCMC(max_cycles, max_trials, random);
 
     // Analytical for 2x2
     std::cout << "\n<e> analytical: " << analytical.epsilon_expectation(beta,N) << std::endl;

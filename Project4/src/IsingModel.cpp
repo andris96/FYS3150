@@ -51,6 +51,10 @@ void IsingModel::generate_random_spin_config() {
     }
 }
 
+void IsingModel::generate_ordered_spin_config() {
+    s = arma::Mat<int>(L, L, arma::fill::ones);
+}
+
 /**
  * Initiate with a new spin configuration and compute the associated energy and magnetization
  * 
@@ -75,8 +79,13 @@ void IsingModel::generate_random_spin_config() {
  * compute_energy_diff_due_to_flip().
  * 
  */
-void IsingModel::initiate() {
-    generate_random_spin_config();
+void IsingModel::initiate(bool random) {
+    if (random == true){
+        generate_random_spin_config();
+    }
+    else{
+        generate_ordered_spin_config();
+    }
     M = arma::accu(s);
     E = 0;
     int current; int bottom; int right; // spin values
@@ -252,8 +261,8 @@ void IsingModel::metropolis(int max_trials) {
  * results (arma::vec) : Vector for storing results, taken as a reference, shape (5, 1).
  *      The format is [E, E*E, M, M*M, |M|]. 
  */
-void IsingModel::monte_carlo(int max_cycles, int max_trials, arma::vec &results) {
-    initiate();
+void IsingModel::monte_carlo(int max_cycles, int max_trials, arma::vec &results, bool random) {
+    initiate(random);
     for (int cycle = 0; cycle < max_cycles; cycle++) {
 
         // Search for a lower energy/ higher probability state..
@@ -278,9 +287,9 @@ void IsingModel::monte_carlo(int max_cycles, int max_trials, arma::vec &results)
  * max_cycle (int) : The maximum number of cycles to search for a stationary state..(?)
  * max_trials (int) : The maximum number of trials to search for a state with lower energy..(?)
  */
-void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials) {
+void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials, bool random) {
     arma::vec results = arma::vec(5, arma::fill::zeros);
-    monte_carlo(max_cycles, max_trials, results);
+    monte_carlo(max_cycles, max_trials, results, random);
 
     // Total number of spins
     int N = L*L;
