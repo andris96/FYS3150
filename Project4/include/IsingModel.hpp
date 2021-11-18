@@ -74,7 +74,8 @@ class IsingModel {
     void monte_carlo(int max_cycles, int max_trials, arma::vec &results, bool random);
 
     // Estimate relavant quantities...
-    void estimate_quantites_with_MCMC(int max_cycles, int max_trials, bool random);
+    void estimate_quantites_with_MCMC(int max_cycles, int max_trials, bool random, 
+                                      const char* e_file, const char* m_file);
 
 };
 

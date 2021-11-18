@@ -287,7 +287,8 @@ void IsingModel::monte_carlo(int max_cycles, int max_trials, arma::vec &results,
  * max_cycle (int) : The maximum number of cycles to search for a stationary state..(?)
  * max_trials (int) : The maximum number of trials to search for a state with lower energy..(?)
  */
-void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials, bool random) {
+void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials, bool random,
+                                              const char* e_file, const char* m_file) {
     arma::vec results = arma::vec(5, arma::fill::zeros);
     monte_carlo(max_cycles, max_trials, results, random);
 
@@ -311,12 +312,22 @@ void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials, bo
     double X = beta/N * (mean_M2 - mean_M_abs*mean_M_abs);
 
     // Do something more... print to terminal ... save to file for later plotting etc.. 
-    // 
+    // Need to modify the print statements so they don't run when this method is called many times
+    /*
     std::cout << "<e>: " << mean_e << std::endl;
     std::cout << "<e^2>: " << mean_e2 << std::endl;
     std::cout << "<|m|>: " << mean_m_abs << std::endl;
     std::cout << "<m^2>: " << mean_m2 << std::endl;
     std::cout << "Cv: " << Cv << std::endl;
     std::cout << "X: " << X << std::endl;
+    */
+    std::ofstream files;
+    
+    files.open(e_file, std::ios_base::app);
+    files << mean_e << "\n";
+    files.close();
 
+    files.open(m_file, std::ios_base::app);
+    files << mean_m_abs << "\n";
+    files.close();
 }
