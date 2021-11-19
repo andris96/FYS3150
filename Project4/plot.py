@@ -17,24 +17,28 @@ cycles = np.loadtxt("cycles.txt")
 
 # Just temporary plotting, should make them look nice eventually
 
+plt.figure()
 plt.plot(cycles, T1Oe, label = "Ordered")
 plt.plot(cycles, T1Re, label = "Random")
 plt.legend()
-plt.show()
+plt.savefig("temp1.pdf")
 
+plt.figure()
 plt.plot(cycles, T1Om, label = "ordered")
 plt.plot(cycles, T1Rm, label = "random")
 plt.legend()
-plt.show()
+plt.savefig("temp2.pdf")
 
+plt.figure()
 plt.plot(cycles, T1Oe, label = "ordered")
 plt.plot(cycles, T1Re, label = "random")
 plt.legend()
-plt.show()
+plt.savefig("temp3.pdf")
 
+plt.figure()
 plt.plot(cycles, T2Om, label = "ordered")
 plt.plot(cycles, T2Rm, label = "random")
 plt.legend()
-plt.show()
+plt.savefig("temp4.pdf")
 
 
