@@ -18,10 +18,6 @@ int main() {
     double beta1 = 1./T1;
     double beta2 = 1./T2;
 
-    arma::ivec max_cycles = arma::regspace<arma::ivec>(500, 500, 2000);
-    int max_trials = 1000;
-
-
 
     // Instantiate
     IsingModel T1_ordered(L,T1); 
@@ -39,6 +35,14 @@ int main() {
     files.open("T1R_m_values.txt", std::ofstream::out | std::ofstream::trunc);
     files.open("T2O_m_values.txt", std::ofstream::out | std::ofstream::trunc);
     files.open("T2R_m_values.txt", std::ofstream::out | std::ofstream::trunc);
+    files.open("cycles.txt", std::ofstream::out | std::ofstream::trunc);
+    files.close();
+
+    arma::ivec max_cycles = arma::regspace<arma::ivec>(500, 200, 1300);
+    int max_trials = 1000;
+
+    files.open("cycles.txt");
+    files << max_cycles << std::endl;
     files.close();
 
     for (int i = 0; i < max_cycles.size(); i++){
