@@ -260,8 +260,10 @@ void IsingModel::metropolis(int max_trials) {
  * max_trials (int) : The maximum number of trials to search for a state with lower energy
  * results (arma::vec) : Vector for storing results, taken as a reference, shape (5, 1).
  *      The format is [E, E*E, M, M*M, |M|]. 
+ * samples (bool) : Creates a file called samples.txt to store each value of epsilon
  */
-void IsingModel::monte_carlo(int max_cycles, int max_trials, arma::vec &results, bool random) {
+void IsingModel::monte_carlo(int max_cycles, int max_trials, arma::vec &results, bool random, 
+                             bool samples) {
     initiate(random);
     for (int cycle = 0; cycle < max_cycles; cycle++) {
 
@@ -274,6 +276,16 @@ void IsingModel::monte_carlo(int max_cycles, int max_trials, arma::vec &results,
         results(2) += M;
         results(3) += M*M;
         results(4) += abs(M);
+
+        // Saving epsilon in a file called samples.txt
+        int N = L*L;
+        if (samples == true){
+            std::ofstream file;
+
+            file.open("samples.txt", std::ios_base::app);
+            file << E/N << "\n";
+            file.close();
+        }
     }
 }
 
@@ -286,11 +298,19 @@ void IsingModel::monte_carlo(int max_cycles, int max_trials, arma::vec &results,
  * ------
  * max_cycle (int) : The maximum number of cycles to search for a stationary state..(?)
  * max_trials (int) : The maximum number of trials to search for a state with lower energy..(?)
+ * random (bool) : Initiate a random state if true, initiate an ordered state if false
+ * print (bool) : if true, prints the various quantities to the terminal
+ * expectation (bool) : If true, writes the expectation value of epsilon and m to text files
+ * e_file (const char*) : Name of the file for <epsilon> values 
+ * m_file (const char*) : Name of the file for <m> values
  */
 void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials, bool random,
+                                              bool print, bool expectation,
                                               const char* e_file, const char* m_file) {
     arma::vec results = arma::vec(5, arma::fill::zeros);
-    monte_carlo(max_cycles, max_trials, results, random);
+
+    // Only interested in expectation values, therefore samples = false
+    monte_carlo(max_cycles, max_trials, results, random, false);
 
     // Total number of spins
     int N = L*L;
@@ -311,23 +331,26 @@ void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials, bo
     double Cv = beta/(N*T) * (mean_E2 - mean_E*mean_E);
     double X = beta/N * (mean_M2 - mean_M_abs*mean_M_abs);
 
-    // Do something more... print to terminal ... save to file for later plotting etc.. 
-    // Need to modify the print statements so they don't run when this method is called many times
-    /*
-    std::cout << "<e>: " << mean_e << std::endl;
-    std::cout << "<e^2>: " << mean_e2 << std::endl;
-    std::cout << "<|m|>: " << mean_m_abs << std::endl;
-    std::cout << "<m^2>: " << mean_m2 << std::endl;
-    std::cout << "Cv: " << Cv << std::endl;
-    std::cout << "X: " << X << std::endl;
-    */
-    std::ofstream files;
+    // Printing values to the terminal
+    if (print == true){
+        std::cout << "<e>: " << mean_e << std::endl;
+        std::cout << "<e^2>: " << mean_e2 << std::endl;
+        std::cout << "<|m|>: " << mean_m_abs << std::endl;
+        std::cout << "<m^2>: " << mean_m2 << std::endl;
+        std::cout << "Cv: " << Cv << std::endl;
+        std::cout << "X: " << X << std::endl;
+    }
     
-    files.open(e_file, std::ios_base::app);
-    files << mean_e << "\n";
-    files.close();
+    // Saving expectation values to files
+    if (expectation == true){
+        std::ofstream files;
+    
+        files.open(e_file, std::ios_base::app); // std::ios_base::app is to append the values
+        files << mean_e << "\n";
+        files.close();
 
-    files.open(m_file, std::ios_base::app);
-    files << mean_m_abs << "\n";
-    files.close();
+        files.open(m_file, std::ios_base::app);
+        files << mean_m_abs << "\n";
+        files.close();
+    }
 }

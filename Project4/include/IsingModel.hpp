@@ -54,6 +54,8 @@ class IsingModel {
     double get_Kb();
 
     // Initiate with a new spin configuration and compute the associated energy and magnetization
+    // If random == true, the spin configuration is randomized
+    // If random == false, the spin configuration is ordered
     void initiate(bool random);
 
     // Flip the spin at lattice site (i,j)
@@ -71,11 +73,12 @@ class IsingModel {
     // Monte Carlo computations...
     // If random == true, it generates a random spin configuration
     // If random == false, it generates an ordered configuration
-    void monte_carlo(int max_cycles, int max_trials, arma::vec &results, bool random);
+    void monte_carlo(int max_cycles, int max_trials, arma::vec &results, bool random, bool samples);
 
     // Estimate relavant quantities...
-    void estimate_quantites_with_MCMC(int max_cycles, int max_trials, bool random, 
-                                      const char* e_file, const char* m_file);
+    void estimate_quantites_with_MCMC(int max_cycles, int max_trials, bool random, bool print, 
+                                      bool expectation, const char* e_file = "e_file.txt", 
+                                      const char* m_file = "m_file.txt");
 
 };
 

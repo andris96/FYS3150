@@ -35,13 +35,8 @@ int main() {
     IsingModel L2(L, T);
     TestIsingModel analytical;
 
-    // Creating files to save value of e and m
-    std::ofstream files;
-    files.open("e_value.txt", std::ofstream::out | std::ofstream::trunc);
-    files.open("m_value.txt", std::ofstream::out | std::ofstream::trunc);
-    files.close();
 
-    L2.estimate_quantites_with_MCMC(max_cycles, max_trials, random,"e_value.txt", "m_value.txt");
+    L2.estimate_quantites_with_MCMC(max_cycles, max_trials, random, true, false);
 
     // Analytical for 2x2
     std::cout << "\n<e> analytical: " << analytical.epsilon_expectation(beta,N) << std::endl;
