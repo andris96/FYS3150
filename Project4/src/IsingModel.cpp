@@ -263,7 +263,7 @@ void IsingModel::metropolis(int max_trials) {
  * samples (bool) : Creates a file called samples.txt to store each value of epsilon
  */
 void IsingModel::monte_carlo(int max_cycles, int max_trials, arma::vec &results, bool random, 
-                             bool samples) {
+                             bool samples, const char* filename) {
     initiate(random);
     for (int cycle = 0; cycle < max_cycles; cycle++) {
 
@@ -278,11 +278,11 @@ void IsingModel::monte_carlo(int max_cycles, int max_trials, arma::vec &results,
         results(4) += abs(M);
 
         // Saving epsilon in a file called samples.txt
-        int N = L*L;
         if (samples == true){
-            std::ofstream file;
+            int N = L*L;
 
-            file.open("samples.txt", std::ios_base::app);
+            std::ofstream file;
+            file.open(filename, std::ios_base::app);
             file << E/N << "\n";
             file.close();
         }

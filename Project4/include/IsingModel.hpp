@@ -73,7 +73,8 @@ class IsingModel {
     // Monte Carlo computations...
     // If random == true, it generates a random spin configuration
     // If random == false, it generates an ordered configuration
-    void monte_carlo(int max_cycles, int max_trials, arma::vec &results, bool random, bool samples);
+    void monte_carlo(int max_cycles, int max_trials, arma::vec &results, bool random, bool samples,
+                     const char* filename = "samples.txt");
 
     // Estimate relavant quantities...
     void estimate_quantites_with_MCMC(int max_cycles, int max_trials, bool random, bool print, 

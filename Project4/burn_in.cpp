@@ -28,17 +28,25 @@ int main() {
     // Creating empty files to save data
     std::ofstream files;
     files.open("T1O_e_values.txt", std::ofstream::out | std::ofstream::trunc);
+    files.close();
     files.open("T1R_e_values.txt", std::ofstream::out | std::ofstream::trunc);
+    files.close();
     files.open("T2O_e_values.txt", std::ofstream::out | std::ofstream::trunc);
+    files.close();
     files.open("T2R_e_values.txt", std::ofstream::out | std::ofstream::trunc);
+    files.close();
     files.open("T1O_m_values.txt", std::ofstream::out | std::ofstream::trunc);
+    files.close();
     files.open("T1R_m_values.txt", std::ofstream::out | std::ofstream::trunc);
+    files.close();
     files.open("T2O_m_values.txt", std::ofstream::out | std::ofstream::trunc);
+    files.close();
     files.open("T2R_m_values.txt", std::ofstream::out | std::ofstream::trunc);
+    files.close();
     files.open("cycles.txt", std::ofstream::out | std::ofstream::trunc);
     files.close();
 
-    arma::ivec max_cycles = arma::regspace<arma::ivec>(100, 100, 1000);
+    arma::ivec max_cycles = arma::regspace<arma::ivec>(10, 10, 100);
     int max_trials = 1000;
 
     files.open("cycles.txt");
@@ -58,4 +66,19 @@ int main() {
         T2_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, random, false,
                                                true, "T2R_e_values.txt","T2R_m_values.txt");
     }
+
+    // Doing problem 6 here, can be moved to main or somewhere else, or we can rename this file
+    IsingModel T1samples(L,T1);
+    IsingModel T2samples(L,T2);
+    int cycles = 500;
+    arma::vec expectation_values = arma::vec(5, arma::fill::zeros);
+
+    files.open("samplesT1.txt", std::ofstream::out | std::ofstream::trunc);
+    files.close();
+    files.open("samplesT2.txt", std::ofstream::out | std::ofstream::trunc);
+    files.close();
+
+    T1samples.monte_carlo(cycles, max_trials, expectation_values, random, true, "samplesT1.txt");
+    T2samples.monte_carlo(cycles, max_trials, expectation_values, random, true, "samplesT2.txt");
+
 }
