@@ -6,6 +6,8 @@
 #include <fstream>
 
 /**
+ * In order to run in parallel, add -fopenmp flag when building the program
+ * 
  * To build:
  * g++ main.cpp src/IsingModel.cpp src/TestIsingModel.cpp -I include -o main.exe -larmadillo
  * 
@@ -19,7 +21,8 @@
  * 
  * Program 0 (default) : Run tests for class IsingModel
  * Program 1 : Comparing numerical for L=2 against analytical (Problem 4)
- * ...
+ * Program 2 : 
+ * Program 3 :
  * Program 4 : Estimate <e>, <|m|>  Cv and X for different L's and T's using OpenMP (Problem 8)
  * 
  */
@@ -27,15 +30,20 @@ int main() {
 
     std::cout << "Welcome to Project 4!\n\n"
     << "Choose one of the following programs to run:\n"
-    << "0 : Run all test for the class IsingModel\n"
+    << "0 : Run all tests for the class IsingModel\n"
     << "1 : Compare the estimated quantities for a lattice of size L=2 against\n"
-    << "the analytical solution\n"
-    // ...
+    << "    the analytical solution\n"
+    << "2 : Make estimates of <epsilon> and <|m|> under different circumstances\n" 
+    << "    in order to estimate burn-in time\n"
+    << "3 : Generate samples of epsilon to estimate the probability function of \n"
     << "4 : (Problem 8)\n\n"
+    << "These programs generate text files containing values. Plotting of these \n"
+    << "values are done in a separate python program\n\n"
     << "Enter an integer between 0-4: ";
 
     int program;
     std::cin >> program;
+    std::cout << "Program running.." << std::endl;
     switch (program) {
 
     // Run all tests
@@ -78,6 +86,115 @@ int main() {
         break;
     }
 
+    // Finding <epsilon> and <|m|> with different number of MC cycles,
+    // In order to estimate burn-in time. (Problem 5)
+    // Plotting is done in a separate python program
+    case 2: {
+        // Set parameters
+        double T1 = 1.0;
+        double T2 = 2.4; 
+        int L = 20;
+
+        // Instantiate
+        IsingModel T1_ordered(L,T1); 
+        IsingModel T1_random(L,T1); 
+        IsingModel T2_ordered(L,T2);
+        IsingModel T2_random(L,T2);
+        
+        // Creating empty files to save data
+        std::ofstream files;
+        files.open("T1O_e_values.txt", std::ofstream::trunc);
+        files.close();
+        files.open("T1R_e_values.txt", std::ofstream::trunc);
+        files.close();
+        files.open("T2O_e_values.txt", std::ofstream::trunc);
+        files.close();
+        files.open("T2R_e_values.txt", std::ofstream::trunc);
+        files.close();
+        files.open("T1O_m_values.txt", std::ofstream::trunc);
+        files.close();
+        files.open("T1R_m_values.txt", std::ofstream::trunc);
+        files.close();
+        files.open("T2O_m_values.txt", std::ofstream::trunc);
+        files.close();
+        files.open("T2R_m_values.txt", std::ofstream::trunc);
+        files.close();
+        files.open("cycles.txt", std::ofstream::trunc);
+        files.close();
+
+        // Defining range of cycles
+        arma::ivec max_cycles = arma::regspace<arma::ivec>(50, 50, 100);
+        int max_trials = 1000;
+
+        // Saving in a text file
+        files.open("cycles.txt");
+        files << max_cycles << std::endl;
+        files.close();
+
+        
+        bool random = true;
+        bool ordered = false;
+        // Parallelization (build with -fopenmp)
+        #ifdef _OPENMP
+        {
+        #pragma omp parallel for
+        for (int i = 0; i < max_cycles.size(); i++){
+            T1_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, ordered, false,
+                                                    true,"T1O_e_values.txt","T1O_m_values.txt" );
+            T1_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, random, false,
+                                                true, "T1R_e_values.txt","T1R_m_values.txt");
+            T2_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, ordered, false,
+                                                    true, "T2O_e_values.txt","T2O_m_values.txt");
+            T2_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, random, false,
+                                                true, "T2R_e_values.txt","T2R_m_values.txt");
+            }
+        }
+        #else
+        {
+        for (int i = 0; i < max_cycles.size(); i++){
+            T1_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, ordered, false,
+                                                    true,"T1O_e_values.txt","T1O_m_values.txt" );
+            T1_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, random, false,
+                                                true, "T1R_e_values.txt","T1R_m_values.txt");
+            T2_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, ordered, false,
+                                                    true, "T2O_e_values.txt","T2O_m_values.txt");
+            T2_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, random, false,
+                                                true, "T2R_e_values.txt","T2R_m_values.txt");
+            }
+        }
+        #endif
+        break;
+    }
+
+    // Generating samples of epsilon at two different temperatures with ordered
+    // and random states (Problem 6). 
+    // Plotting is done in a separate python program. 
+    case 3: {
+        // Set parameters (same as case 2)
+        double T1 = 1.0;
+        double T2 = 2.4; 
+        int L = 20;
+
+        // Defining range of cycles
+        arma::ivec max_cycles = arma::regspace<arma::ivec>(50, 50, 100);
+        int max_trials = 1000;
+
+        IsingModel T1samples(L,T1);
+        IsingModel T2samples(L,T2);
+        int cycles = 500;
+        arma::vec expectation_values = arma::vec(5, arma::fill::zeros);
+
+        std::ofstream files;
+        files.open("samplesT1.txt", std::ofstream::out | std::ofstream::trunc);
+        files.close();
+        files.open("samplesT2.txt", std::ofstream::out | std::ofstream::trunc);
+        files.close();
+
+        T1samples.monte_carlo(cycles, max_trials, expectation_values, random, true, "samplesT1.txt");
+        T2samples.monte_carlo(cycles, max_trials, expectation_values, random, true, "samplesT2.txt");
+        break;
+    }
+
     // Problem 8 : Estimatiation of quantities through parallellization with OpenMP 
     case 4: {
         for (int L = 40;  L <= 100; L += 20) {
@@ -92,6 +209,8 @@ int main() {
         break;
 
     } // end switch
+
+    std::cout << "Done" << std::endl;
 
     return 0;
 }
