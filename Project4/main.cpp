@@ -43,7 +43,6 @@ int main() {
 
     int program;
     std::cin >> program;
-    std::cout << "Program running.." << std::endl;
     switch (program) {
 
     // Run all tests
@@ -94,6 +93,7 @@ int main() {
         double T1 = 1.0;
         double T2 = 2.4; 
         int L = 20;
+        int max_trials = 1000;
 
         // Instantiate
         IsingModel T1_ordered(L,T1); 
@@ -124,7 +124,7 @@ int main() {
 
         // Defining range of cycles
         arma::ivec max_cycles = arma::regspace<arma::ivec>(50, 50, 100);
-        int max_trials = 1000;
+
 
         // Saving in a text file
         files.open("cycles.txt");
@@ -174,24 +174,26 @@ int main() {
         double T1 = 1.0;
         double T2 = 2.4; 
         int L = 20;
-
-        // Defining range of cycles
-        arma::ivec max_cycles = arma::regspace<arma::ivec>(50, 50, 100);
         int max_trials = 1000;
 
         IsingModel T1samples(L,T1);
         IsingModel T2samples(L,T2);
-        int cycles = 500;
-        arma::vec expectation_values = arma::vec(5, arma::fill::zeros);
+        int max_cycles = 200;
+        arma::vec resultsT1 = arma::vec(5, arma::fill::zeros);
+        arma::vec resultsT2 = arma::vec(5, arma::fill::zeros);
 
         std::ofstream files;
-        files.open("samplesT1.txt", std::ofstream::out | std::ofstream::trunc);
+        files.open("samplesT1.txt", std::ofstream::trunc);
         files.close();
-        files.open("samplesT2.txt", std::ofstream::out | std::ofstream::trunc);
+        files.open("samplesT2.txt", std::ofstream::trunc);
         files.close();
 
-        T1samples.monte_carlo(cycles, max_trials, expectation_values, random, true, "samplesT1.txt");
-        T2samples.monte_carlo(cycles, max_trials, expectation_values, random, true, "samplesT2.txt");
+        // We could parallelize this code to do one thread for each temperature, however this seemed
+        // to not save much time (if any), and was troublesome to implement as we don't always get 
+        // the amount of threads we request for.
+        T1samples.monte_carlo(max_cycles, max_trials, resultsT1, true, true, "samplesT1.txt");
+        T2samples.monte_carlo(max_cycles, max_trials, resultsT2, true, true, "samplesT2.txt");
+        
         break;
     }
 
@@ -210,7 +212,6 @@ int main() {
 
     } // end switch
 
-    std::cout << "Done" << std::endl;
 
     return 0;
 }
