@@ -47,11 +47,16 @@ class IsingModel {
     // Update the spin state with an ordered configuration
     void generate_ordered_spin_config();
 
-    // Setters (only for testing purposes)
+    // Setters 
     void set_s(arma::Mat<int> s_in);
+    void set_T(double T_in);
 
     // Getters
     double get_Kb();
+
+    // Calculate Cv and x
+    double Cv_calculate(double beta, int N, double T, double mean_E2, double mean_E);
+    double X_calculate(double beta, int N, double T, double mean_M2, double mean_M_abs);
 
     // Initiate with a new spin configuration and compute the associated energy and magnetization
     // If random == true, the spin configuration is randomized
@@ -77,8 +82,9 @@ class IsingModel {
                      const char* filename = "samples.txt");
 
     // Estimate relavant quantities...
-    void estimate_quantites_with_MCMC(int max_cycles, int max_trials, bool random, bool print, 
-                                      bool expectation, const char* e_file = "e_file.txt", 
+    void estimate_quantites_with_MCMC(int max_cycles, int max_trials, arma::vec evalues, 
+                                      bool random = false, bool print = false, bool expectation = false, 
+                                      const char* e_file = "e_file.txt", 
                                       const char* m_file = "m_file.txt");
 
 };

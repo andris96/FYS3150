@@ -73,8 +73,10 @@ int main() {
         // Instantiate
         IsingModel L2(L, T);
         TestIsingModel analytical;
+        arma::vec expectation_values = arma::vec(4, arma::fill::zeros);
+        
 
-        L2.estimate_quantites_with_MCMC(max_cycles, max_trials, random, true, false);
+        L2.estimate_quantites_with_MCMC(max_cycles, max_trials, expectation_values, random, true, false);
 
         // Analytical for 2x2
         std::cout << "\n<e> analytical: " << analytical.epsilon_expectation(beta,N) << std::endl;
@@ -123,7 +125,8 @@ int main() {
         files.close();
 
         // Defining range of cycles
-        arma::ivec max_cycles = arma::regspace<arma::ivec>(50, 50, 100);
+        arma::ivec max_cycles = arma::regspace<arma::ivec>(50, 50, 200);
+        arma::vec e = arma::vec(5, arma::fill::zeros);
 
 
         // Saving in a text file
@@ -137,28 +140,31 @@ int main() {
         // Parallelization (build with -fopenmp)
         #ifdef _OPENMP
         {
-        #pragma omp parallel for
+        #pragma omp parallel
+        // Making max_cycles a local variable
+        arma::ivec max_cycles = arma::regspace<arma::ivec>(50, 50, 200);
+        #pragma omp for
         for (int i = 0; i < max_cycles.size(); i++){
-            T1_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, ordered, false,
+            T1_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, ordered, false,
                                                     true,"T1O_e_values.txt","T1O_m_values.txt" );
-            T1_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, random, false,
+            T1_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, random, false,
                                                 true, "T1R_e_values.txt","T1R_m_values.txt");
-            T2_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, ordered, false,
+            T2_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, ordered, false,
                                                     true, "T2O_e_values.txt","T2O_m_values.txt");
-            T2_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, random, false,
+            T2_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, random, false,
                                                 true, "T2R_e_values.txt","T2R_m_values.txt");
             }
         }
         #else
         {
         for (int i = 0; i < max_cycles.size(); i++){
-            T1_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, ordered, false,
+            T1_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, ordered, false,
                                                     true,"T1O_e_values.txt","T1O_m_values.txt" );
-            T1_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, random, false,
+            T1_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, random, false,
                                                 true, "T1R_e_values.txt","T1R_m_values.txt");
-            T2_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, ordered, false,
+            T2_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, ordered, false,
                                                     true, "T2O_e_values.txt","T2O_m_values.txt");
-            T2_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, random, false,
+            T2_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, random, false,
                                                 true, "T2R_e_values.txt","T2R_m_values.txt");
             }
         }
@@ -189,7 +195,7 @@ int main() {
         files.close();
 
         // We could parallelize this code to do one thread for each temperature, however this seemed
-        // to not save much time (if any), and was troublesome to implement as we don't always get 
+        // to not save much time, and was troublesome to implement as we don't always get 
         // the amount of threads we request for.
         T1samples.monte_carlo(max_cycles, max_trials, resultsT1, true, true, "samplesT1.txt");
         T2samples.monte_carlo(max_cycles, max_trials, resultsT2, true, true, "samplesT2.txt");
@@ -199,11 +205,24 @@ int main() {
 
     // Problem 8 : Estimatiation of quantities through parallellization with OpenMP 
     case 4: {
+        int max_cycles = 500;
+        int max_trials = 1000;
+        arma::vec T = arma::linspace(2.1, 2.4, 10);
+        arma::mat expectation_values(T.size(), 4, arma::fill::zeros);
         for (int L = 40;  L <= 100; L += 20) {
-            //...
-            continue;
+            IsingModel LT(L, T(0));  
+            #pragma omp parallel for
+            for (int i = 0; i < T.size(); i++){
+                LT.set_T(T(i));
+                LT.estimate_quantites_with_MCMC(max_cycles, max_trials, expectation_values.col(i));
+                        
+            }
+            expectation_values.save("expectation_values.txt", arma::raw_ascii);
+            
+            
         }
-
+        
+        break;
     }
 
     default:

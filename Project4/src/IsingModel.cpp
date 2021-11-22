@@ -106,9 +106,24 @@ void IsingModel::set_s(arma::Mat<int> s_in) {
     s = s_in;
 }
 
+// Set a temperature
+void IsingModel::set_T(double T_in){
+    T = T_in;
+}
+
 // Get the boltzmann constant
 double IsingModel::get_Kb() {
     return kB;
+}
+
+// Calculate Cv
+double IsingModel::Cv_calculate(double beta, int N, double T, double mean_E2, double mean_E){
+    return beta/(N*T) * (mean_E2 - mean_E*mean_E);
+}
+
+// Calculate x
+double IsingModel::X_calculate(double beta, int N, double T, double mean_M2, double mean_M_abs){
+    return beta/N * (mean_M2 - mean_M_abs*mean_M_abs);
 }
 
 // Flip the spin at lattice site (i,j)
@@ -260,7 +275,8 @@ void IsingModel::metropolis(int max_trials) {
  * max_trials (int) : The maximum number of trials to search for a state with lower energy
  * results (arma::vec) : Vector for storing results, taken as a reference, shape (5, 1).
  *      The format is [E, E*E, M, M*M, |M|]. 
- * samples (bool) : Creates a file called samples.txt to store each value of epsilon
+ * random (bool) : Initiates a random configuration if set to true, ordered config if false
+ * samples (bool) : Creates a file called samples.txt to store each value of epsilon, if set to true
  */
 void IsingModel::monte_carlo(int max_cycles, int max_trials, arma::vec &results, bool random, 
                              bool samples, const char* filename) {
@@ -304,10 +320,11 @@ void IsingModel::monte_carlo(int max_cycles, int max_trials, arma::vec &results,
  * e_file (const char*) : Name of the file for <epsilon> values 
  * m_file (const char*) : Name of the file for <m> values
  */
-void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials, bool random,
-                                              bool print, bool expectation,
+void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials,  arma::vec evalues, 
+                                              bool random, bool print, bool expectation,
                                               const char* e_file, const char* m_file) {
     arma::vec results = arma::vec(5, arma::fill::zeros);
+    
 
     // Only interested in expectation values, therefore samples = false
     monte_carlo(max_cycles, max_trials, results, random, false);
@@ -328,8 +345,13 @@ void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials, bo
     double mean_m_abs = mean_M_abs/N;
 
     // Compute specific heat capacity Cv and magnetic susceptibility X per spin
-    double Cv = beta/(N*T) * (mean_E2 - mean_E*mean_E);
-    double X = beta/N * (mean_M2 - mean_M_abs*mean_M_abs);
+    double Cv = Cv_calculate(beta, N, T, mean_E2, mean_E);
+    double X = X_calculate(beta, N, T, mean_M2, mean_M_abs);
+
+    evalues(0) = mean_e;
+    evalues(1) = mean_m_abs;
+    evalues(2) = Cv;
+    evalues(3) = X;
 
     // Printing values to the terminal
     if (print == true){
@@ -353,4 +375,6 @@ void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials, bo
         files << mean_m_abs << "\n";
         files.close();
     }
+
+
 }
