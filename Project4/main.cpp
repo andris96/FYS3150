@@ -73,7 +73,7 @@ int main() {
         // Instantiate
         IsingModel L2(L, T);
         TestIsingModel analytical;
-        arma::vec expectation_values = arma::vec(4, arma::fill::zeros);
+        arma::rowvec expectation_values = arma::rowvec(4, arma::fill::zeros);
         
 
         L2.estimate_quantites_with_MCMC(max_cycles, max_trials, expectation_values, random, true, false);
@@ -126,7 +126,7 @@ int main() {
 
         // Defining range of cycles
         arma::ivec max_cycles = arma::regspace<arma::ivec>(50, 50, 200);
-        arma::vec e = arma::vec(5, arma::fill::zeros);
+        arma::rowvec e = arma::rowvec(5, arma::fill::zeros);
 
 
         // Saving in a text file
@@ -138,11 +138,12 @@ int main() {
         bool random = true;
         bool ordered = false;
         // Parallelization (build with -fopenmp)
+        auto start = std::chrono::steady_clock::now();
         #ifdef _OPENMP
         {
         #pragma omp parallel
         // Making max_cycles a local variable
-        arma::ivec max_cycles = arma::regspace<arma::ivec>(50, 50, 200);
+        arma::ivec max_cycles = arma::regspace<arma::ivec>(50, 10, 110);
         #pragma omp for
         for (int i = 0; i < max_cycles.size(); i++){
             T1_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, ordered, false,
@@ -169,6 +170,9 @@ int main() {
             }
         }
         #endif
+        auto end = std::chrono::steady_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end-start;
+        std::cout << "Time spent on estimating: " << elapsed_seconds.count() << "s\n";
         break;
     }
 
@@ -218,6 +222,7 @@ int main() {
         */
         
         for (int L = 40;  L <= 100; L += 20) { 
+            auto start = std::chrono::steady_clock::now();
             #ifdef _OPENMP
             {
             #pragma omp parallel for
@@ -226,6 +231,7 @@ int main() {
                 LT.estimate_quantites_with_MCMC(max_cycles, max_trials, expectation_values.row(i));
                         
             }
+            expectation_values.save("expectation_values.txt", arma::raw_ascii);
             }
             #else
             {
@@ -233,10 +239,13 @@ int main() {
                 IsingModel LT(L, T(i)); 
                 LT.estimate_quantites_with_MCMC(max_cycles, max_trials, expectation_values.row(i));
             }
+            expectation_values.save("expectation_values.txt", arma::raw_ascii);
             }
             #endif
-            
-            expectation_values.save("expectation_values.txt", arma::raw_ascii);
+            auto end = std::chrono::steady_clock::now();
+            std::chrono::duration<double> elapsed_seconds = end-start;
+            std::cout << "Time spent on estimating: " << elapsed_seconds.count() << "s\n";
+
             
             
         }

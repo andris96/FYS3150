@@ -49,6 +49,7 @@ int main() {
     files.close();
 
     arma::ivec max_cycles = arma::regspace<arma::ivec>(50, 50, 100);
+    arma::rowvec r = arma::rowvec(4,arma::fill::zeros);
     int max_trials = 1000;
 
     files.open("cycles.txt");
@@ -62,26 +63,26 @@ int main() {
     {
     #pragma omp parallel for
     for (int i = 0; i < max_cycles.size(); i++){
-        T1_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, ordered, false,
+        T1_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, r, ordered, false,
                                                 true,"T1O_e_values.txt","T1O_m_values.txt" );
-        T1_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, random, false,
+        T1_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, r, random, false,
                                                true, "T1R_e_values.txt","T1R_m_values.txt");
-        T2_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, ordered, false,
+        T2_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, r, ordered, false,
                                                 true, "T2O_e_values.txt","T2O_m_values.txt");
-        T2_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, random, false,
+        T2_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, r, random, false,
                                                true, "T2R_e_values.txt","T2R_m_values.txt");
         }
     }
     #else
     {
     for (int i = 0; i < max_cycles.size(); i++){
-        T1_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, ordered, false,
+        T1_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, r, ordered, false,
                                                 true,"T1O_e_values.txt","T1O_m_values.txt" );
-        T1_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, random, false,
+        T1_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, r, random, false,
                                                true, "T1R_e_values.txt","T1R_m_values.txt");
-        T2_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, ordered, false,
+        T2_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, r, ordered, false,
                                                 true, "T2O_e_values.txt","T2O_m_values.txt");
-        T2_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, random, false,
+        T2_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, r, random, false,
                                                true, "T2R_e_values.txt","T2R_m_values.txt");
         }
     }
