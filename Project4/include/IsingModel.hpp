@@ -47,9 +47,9 @@ class IsingModel {
     // Update the spin state with an ordered configuration
     void generate_ordered_spin_config();
 
-    // Setters 
-    void set_s(arma::Mat<int> s_in);
-    void set_T(double T_in);
+    // Setters (only for testing purposes)
+    void set_s(arma::Mat<int> s_in); 
+
 
     // Getters
     double get_Kb();
@@ -82,7 +82,7 @@ class IsingModel {
                      const char* filename = "samples.txt");
 
     // Estimate relavant quantities...
-    void estimate_quantites_with_MCMC(int max_cycles, int max_trials, arma::vec evalues, 
+    void estimate_quantites_with_MCMC(int max_cycles, int max_trials, arma::rowvec evalues, 
                                       bool random = false, bool print = false, bool expectation = false, 
                                       const char* e_file = "e_file.txt", 
                                       const char* m_file = "m_file.txt");

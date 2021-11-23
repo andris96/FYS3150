@@ -209,12 +209,12 @@ int main() {
         int max_trials = 1000;
         arma::vec T = arma::linspace(2.1, 2.4, 10);
         arma::mat expectation_values(T.size(), 4, arma::fill::zeros);
-        for (int L = 40;  L <= 100; L += 20) {
-            IsingModel LT(L, T(0));  
+
+        for (int L = 40;  L <= 100; L += 20) { 
             #pragma omp parallel for
             for (int i = 0; i < T.size(); i++){
-                LT.set_T(T(i));
-                LT.estimate_quantites_with_MCMC(max_cycles, max_trials, expectation_values.col(i));
+                IsingModel LT(L, T(i)); 
+                LT.estimate_quantites_with_MCMC(max_cycles, max_trials, expectation_values.row(i));
                         
             }
             expectation_values.save("expectation_values.txt", arma::raw_ascii);
