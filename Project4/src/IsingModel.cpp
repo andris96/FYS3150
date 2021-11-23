@@ -316,7 +316,7 @@ void IsingModel::monte_carlo(int max_cycles, int max_trials, arma::vec &results,
  * e_file (const char*) : Name of the file for <epsilon> values 
  * m_file (const char*) : Name of the file for <m> values
  */
-void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials,  arma::rowvec evalues, 
+void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials,  arma::rowvec& evalues, 
                                               bool random, bool print, bool expectation,
                                               const char* e_file, const char* m_file) {
     arma::vec results = arma::vec(5, arma::fill::zeros);

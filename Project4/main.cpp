@@ -143,7 +143,7 @@ int main() {
         {
         #pragma omp parallel private(max_cycles)
         // Making max_cycles a local variable
-        arma::ivec max_cycles = arma::regspace<arma::ivec>(100, 100, 1000);
+        arma::ivec max_cycles = arma::regspace<arma::ivec>(10, 10, 20);
         #pragma omp for
         for (int i = 0; i < max_cycles.size(); i++){
             T1_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, ordered, false,
@@ -213,6 +213,7 @@ int main() {
         int max_trials = 1000;
         arma::vec T = arma::linspace(2.1, 2.4, 10);
         arma::mat expectation_values(T.size(), 4, arma::fill::zeros);
+        arma::rowvec temp(4,arma::fill::zeros);
         
         /*
         IsingModel test(20,T(0));
@@ -227,7 +228,8 @@ int main() {
             #pragma omp parallel for
             for (int i = 0; i < T.size(); i++){
                 IsingModel LT(L, T(i)); 
-                LT.estimate_quantites_with_MCMC(max_cycles, max_trials, expectation_values.row(i));
+                LT.estimate_quantites_with_MCMC(max_cycles, max_trials, temp);
+                expectation_values.row(i) = temp;
                         
             }
             expectation_values.save("expectation_valuesL" + std::to_string(L) + ".txt", arma::raw_ascii);
@@ -236,8 +238,10 @@ int main() {
             {
             for (int i = 0; i < T.size(); i++){
                 IsingModel LT(L, T(i)); 
-                LT.estimate_quantites_with_MCMC(max_cycles, max_trials, expectation_values.row(i));
+                LT.estimate_quantites_with_MCMC(max_cycles, max_trials, temp);
+                expectation_values.row(i) = temp;
             }
+
             expectation_values.save("expectation_valuesL" + std::to_string(L) + ".txt", arma::raw_ascii);
             }
             #endif

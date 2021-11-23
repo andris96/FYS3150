@@ -82,7 +82,7 @@ class IsingModel {
                      const char* filename = "samples.txt");
 
     // Estimate relavant quantities...
-    void estimate_quantites_with_MCMC(int max_cycles, int max_trials, arma::rowvec evalues, 
+    void estimate_quantites_with_MCMC(int max_cycles, int max_trials, arma::rowvec& evalues, 
                                       bool random = false, bool print = false, bool expectation = false, 
                                       const char* e_file = "e_file.txt", 
                                       const char* m_file = "m_file.txt");
