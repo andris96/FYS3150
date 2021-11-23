@@ -220,9 +220,8 @@ int main() {
         test.estimate_quantites_with_MCMC(max_cycles,max_trials,testvec);
         testvec.save("expectation_values.txt", arma::raw_ascii);
         */
-        
+        auto start = std::chrono::steady_clock::now();
         for (int L = 40;  L <= 100; L += 20) { 
-            auto start = std::chrono::steady_clock::now();
             #ifdef _OPENMP
             {
             #pragma omp parallel for
@@ -242,14 +241,13 @@ int main() {
             expectation_values.save("expectation_values.txt", arma::raw_ascii);
             }
             #endif
-            auto end = std::chrono::steady_clock::now();
-            std::chrono::duration<double> elapsed_seconds = end-start;
-            std::cout << "Time spent on estimating: " << elapsed_seconds.count() << "s\n";
-
-            
             
         }
         
+        auto end = std::chrono::steady_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end-start;
+        std::cout << "Time spent on estimating: " << elapsed_seconds.count() << "s\n";
+
         break;
     }
 
