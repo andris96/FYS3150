@@ -125,7 +125,7 @@ int main() {
         files.close();
 
         // Defining range of cycles
-        arma::ivec max_cycles = arma::regspace<arma::ivec>(50, 50, 200);
+        arma::ivec max_cycles = arma::regspace<arma::ivec>(100, 100, 1000);
         arma::rowvec e = arma::rowvec(5, arma::fill::zeros);
 
 
@@ -141,9 +141,9 @@ int main() {
         auto start = std::chrono::steady_clock::now();
         #ifdef _OPENMP
         {
-        #pragma omp parallel
+        #pragma omp parallel private(max_cycles)
         // Making max_cycles a local variable
-        arma::ivec max_cycles = arma::regspace<arma::ivec>(50, 10, 110);
+        arma::ivec max_cycles = arma::regspace<arma::ivec>(100, 100, 1000);
         #pragma omp for
         for (int i = 0; i < max_cycles.size(); i++){
             T1_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, ordered, false,
@@ -230,7 +230,7 @@ int main() {
                 LT.estimate_quantites_with_MCMC(max_cycles, max_trials, expectation_values.row(i));
                         
             }
-            expectation_values.save("expectation_values.txt", arma::raw_ascii);
+            expectation_values.save("expectation_valuesL" + std::to_string(L) + ".txt", arma::raw_ascii);
             }
             #else
             {
@@ -238,7 +238,7 @@ int main() {
                 IsingModel LT(L, T(i)); 
                 LT.estimate_quantites_with_MCMC(max_cycles, max_trials, expectation_values.row(i));
             }
-            expectation_values.save("expectation_values.txt", arma::raw_ascii);
+            expectation_values.save("expectation_valuesL" + std::to_string(L) + ".txt", arma::raw_ascii);
             }
             #endif
             
