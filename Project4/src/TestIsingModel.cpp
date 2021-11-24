@@ -99,7 +99,7 @@ void TestIsingModel::test_rand_uniform() {
     }
 
     // Check that both sequences are not equal, ie. that the seeds are different for each call
-    // THIS NOT CHECK PROPER SEEDING...
+    // THIS DOES NOT CHECK PROPER SEEDING...
     assert(~arma::approx_equal(first_sequence, second_sequence, "absdiff", 10e-15));
 }
 

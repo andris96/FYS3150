@@ -19,7 +19,10 @@ IsingModel::IsingModel(int L_in, double T_in) {
  * Random number generator drawn from a uniform distrution using system clock as seed
  * 
  * Adapted from: https://github.com/anderkve/FYS3150/blob/master/code_examples/random_number_generation/main_minimal.cpp
- * (...)
+ * 
+ * Returns
+ * -------
+ * (double) : A random double between [0, 1.0]
  */
 double IsingModel::rand_uniform() {
     unsigned int seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -30,13 +33,10 @@ double IsingModel::rand_uniform() {
 }
 
 /**
- * Update the spin state s with a random configuration
+ * Update the spin state $s (class member) with a random configuration
  * 
  * The matrix s is initiated with all ones, and then each elem
  * if flipped with an equal probability. 
- * 
- * (...)
- * 
  */
 void IsingModel::generate_random_spin_config() {
     s = arma::Mat<int>(L, L, arma::fill::ones);
@@ -56,9 +56,7 @@ void IsingModel::generate_ordered_spin_config() {
 }
 
 /**
- * Initiate with a new spin configuration and compute the associated energy and magnetization
- * 
- * (...)
+ * Initiate with a new spin configuration (state) and compute the associated energy and magnetization
  * 
  * To avoid double counting of spin-pairs when computing the system energy, only the spin pairs
  * current<->right and current<->bottom are considered for site (i,j). Boundary conditions are taken
@@ -78,6 +76,9 @@ void IsingModel::generate_ordered_spin_config() {
  * the modulo operator is used on negative numbers, hence no additional complications are needed as in 
  * compute_energy_diff_due_to_flip().
  * 
+ * Parameters
+ * ----------
+ * random (bool) : if true, initiated with a random config, else with all ones (ordered)
  */
 void IsingModel::initiate(bool random) {
     if (random == true){
@@ -105,7 +106,6 @@ void IsingModel::set_s(arma::Mat<int> s_in) {
     assert((s_in.n_rows == L) && (s_in.n_cols == L));
     s = s_in;
 }
-
 
 // Get the boltzmann constant
 double IsingModel::get_Kb() {
@@ -166,20 +166,15 @@ void IsingModel::flip_spin(int i, int j) {
  * Due to how the % operator is implemented in C++, taking the modulo of a negative number
  * will yield a negative number, which is not what we want in order to include periodic 
  * boundary conditionds. So instead of taking a % b we need to take (b + (a%b)) % b. 
+ * (Sorce: https://stackoverflow.com/questions/7594508/modulo-operator-with-negative-values)
+ *  
+ * Parameters
+ * ----------
+ * i, j (int) : Indices of lattice size (i,j)
  * 
- * Source:
- * https://stackoverflow.com/questions/7594508/modulo-operator-with-negative-values
- * 
- * ...
- * 
- * params
- * ------
- * i, j (int) : Lattice site (i,j)
- * 
- * returns
+ * Returns
  * -------
  * (int) : The energy difference due to a single spin flip at site (i,j)
- * 
  */
 int IsingModel::compute_energy_diff_due_to_flip(int i, int j) {
     // The spin values at site (i,j) before and after flip
@@ -218,8 +213,6 @@ std::map<int, double> IsingModel::make_energy_map() {
 /**
  * Metropolis acceptance steps: run a single Monte Carlo cycle
  * 
- * ... (Detailed docstring..)
- * 
  * Params
  * ------
  * max_trials (int) : The maximum number of trials to search for state with lower energy
@@ -237,13 +230,8 @@ void IsingModel::metropolis(int max_trials) {
         j = int(rand_uniform()*10*L) % L;//std::rand() % L;
         flip_spin(i, j);
 
-        // Compute the energy difference due to the spin flip and ratio, but 
-        // accept the new state immediately if deltaE <= 0
+        // Compute the energy difference due to the spin flip and ratio
         deltaE = compute_energy_diff_due_to_flip(i, j);
-        // if (deltaE <= 0) {
-        //     accepted = true;
-        //     break;
-        // }
         double ratio = energy_map[deltaE];
 
         // Acceptance step: 
@@ -261,9 +249,7 @@ void IsingModel::metropolis(int max_trials) {
 }
 
 /**
- * Monte Carlo computaion.. stores values for relavant quantities...
- * 
- * (Detailed docstring..)
+ * Monte Carlo step
  * 
  * Params
  * ------
@@ -307,8 +293,6 @@ void IsingModel::monte_carlo(int max_cycles, int max_trials, arma::vec &results,
 
 /**
  * Estimate relavant quantities...
- * 
- * (...)
  * 
  * Params
  * ------
@@ -376,6 +360,4 @@ void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials,  a
         files << mean_m_abs << "\n";
         files.close();
     }
-
-
 }

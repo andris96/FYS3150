@@ -17,12 +17,11 @@
 
 /**
  * 
- * (detailed doc string..)
  * 
  * Program 0 (default) : Run tests for class IsingModel
  * Program 1 : Comparing numerical for L=2 against analytical (Problem 4)
- * Program 2 : 
- * Program 3 :
+ * Program 2 : Make estimates of <epsilon> and <|m|> under different circumstances
+ * Program 3 : Estimate probability distributions
  * Program 4 : Estimate <e>, <|m|>  Cv and X for different L's and T's using OpenMP (Problem 8)
  * 
  */
@@ -35,8 +34,8 @@ int main() {
     << "    the analytical solution\n"
     << "2 : Make estimates of <epsilon> and <|m|> under different circumstances\n" 
     << "    in order to estimate burn-in time\n"
-    << "3 : Generate samples of epsilon to estimate the probability function of \n"
-    << "4 : (Problem 8)\n\n"
+    << "3 : Generate samples of epsilon to estimate the probability distributions\n"
+    << "4 : Estimate <e>, <|m|>  Cv and X for different L's and T's\n\n"
     << "These programs generate text files containing values. Plotting of these \n"
     << "values are done in a separate python program\n\n"
     << "Enter an integer between 0-4: ";
@@ -178,6 +177,9 @@ int main() {
     // and random states (Problem 6). 
     // Plotting is done in a separate python program. 
     case 3: {
+
+        auto start = std::chrono::steady_clock::now();
+
         // Set parameters (same as case 2)
         double T1 = 1.0;
         double T2 = 2.4; 
@@ -186,7 +188,7 @@ int main() {
 
         IsingModel T1samples(L,T1);
         IsingModel T2samples(L,T2);
-        int max_cycles = 200;
+        int max_cycles = 5000;
         arma::vec resultsT1 = arma::vec(5, arma::fill::zeros);
         arma::vec resultsT2 = arma::vec(5, arma::fill::zeros);
 
@@ -202,6 +204,10 @@ int main() {
         T1samples.monte_carlo(max_cycles, max_trials, resultsT1, true, true, "samplesT1.txt");
         T2samples.monte_carlo(max_cycles, max_trials, resultsT2, true, true, "samplesT2.txt");
         
+        auto end = std::chrono::steady_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end-start;
+        std::cout << "Program run-time: " << elapsed_seconds.count() << "s\n";
+
         break;
     }
 
@@ -209,7 +215,7 @@ int main() {
     case 4: {
         int max_cycles = 1000;
         int max_trials = 1000;
-        arma::vec T = arma::linspace(2.1, 2.4, 10);
+        arma::vec T = arma::linspace(2.3, 2.4, 10);
         arma::mat expectation_values(T.size(), 4, arma::fill::zeros);
         arma::rowvec temp(4,arma::fill::zeros);
         

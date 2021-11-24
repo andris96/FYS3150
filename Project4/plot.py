@@ -103,16 +103,17 @@ else:
 ############################################
 samplesT1 = np.loadtxt("samplesT1.txt")
 samplesT2 = np.loadtxt("samplesT2.txt")
-width = 0.001
+widthT1 = 0.005
+widthT2 = 0.001
 
 plt.figure()
-plt.hist(samplesT1, bins = np.arange(min(samplesT1), max(samplesT1) + width, width))
+plt.hist(samplesT1, bins = np.arange(min(samplesT1), max(samplesT1) + widthT1, widthT1))
 plt.xlabel("$\epsilon$")
 plt.ylabel("distribution")
 plt.savefig("samplesT1.pdf")
 
 plt.figure()
-plt.hist(samplesT2, bins = np.arange(min(samplesT2), max(samplesT1) + width, width))
+plt.hist(samplesT2, bins = np.arange(min(samplesT2), max(samplesT2) + widthT2, widthT2))
 plt.xlabel("$\epsilon$")
 plt.ylabel("distribution")
 plt.savefig("samplesT2.pdf")
@@ -126,8 +127,9 @@ quantities = ["e", "m", "Cv", "X"]
 figures = {qnt : plt.figure() for qnt in quantities}
 axes = {qnt : figures[qnt].add_subplot(1,1,1) for qnt in quantities}
 
-n_T = 50 # must set this value correct!
-temperatures = np.linspace(2.1, 2.4, n_T)
+# must set thse values correct according to last run in main.cpp!
+n_T = 10 
+temperatures = np.linspace(2.3, 2.4, n_T)
 for L in ["40", "60", "80", "100"]:
     data = np.loadtxt("expectation_valuesL" + L + ".txt")
     for col, qnt in enumerate(quantities):
