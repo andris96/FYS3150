@@ -125,7 +125,7 @@ int main() {
         files.close();
 
         // Defining range of cycles
-        arma::ivec max_cycles = arma::regspace<arma::ivec>(100, 100, 1000);
+        arma::ivec max_cycles = arma::regspace<arma::ivec>(200, 200, 4000);
         arma::rowvec e = arma::rowvec(5, arma::fill::zeros);
 
 
@@ -141,9 +141,10 @@ int main() {
         auto start = std::chrono::steady_clock::now();
         #ifdef _OPENMP
         {
-        #pragma omp parallel private(max_cycles)
         // Making max_cycles a local variable
-        arma::ivec max_cycles = arma::regspace<arma::ivec>(10, 10, 20);
+        #pragma omp parallel private(max_cycles)
+        //had to define max_cycles again for some reason
+        arma::ivec max_cycles = arma::regspace<arma::ivec>(200, 200, 4000); 
         #pragma omp for
         for (int i = 0; i < max_cycles.size(); i++){
             T1_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, ordered, false,
@@ -209,18 +210,13 @@ int main() {
 
     // Problem 8 : Estimatiation of quantities through parallellization with OpenMP 
     case 4: {
-        int max_cycles = 500;
+        int max_cycles = 1000;
         int max_trials = 1000;
-        arma::vec T = arma::linspace(2.1, 2.4, 10);
+        arma::vec T = arma::linspace(2.1, 2.4, 50);
         arma::mat expectation_values(T.size(), 4, arma::fill::zeros);
         arma::rowvec temp(4,arma::fill::zeros);
         
-        /*
-        IsingModel test(20,T(0));
-        arma::rowvec testvec(4,arma::fill::zeros);
-        test.estimate_quantites_with_MCMC(max_cycles,max_trials,testvec);
-        testvec.save("expectation_values.txt", arma::raw_ascii);
-        */
+
         auto start = std::chrono::steady_clock::now();
         for (int L = 40;  L <= 100; L += 20) { 
             #ifdef _OPENMP

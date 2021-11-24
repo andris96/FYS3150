@@ -282,12 +282,18 @@ void IsingModel::monte_carlo(int max_cycles, int max_trials, arma::vec &results,
         // Search for a lower energy/ higher probability state..
         metropolis(max_trials);
 
+
         // Store the relavant quantities
-        results(0) += E;
-        results(1) += E*E;
-        results(2) += M;
-        results(3) += M*M;
-        results(4) += abs(M);
+        // Accounting for burn-in time
+        int burn_in = 0;
+        if (cycle > burn_in){
+            results(0) += E;
+            results(1) += E*E;
+            results(2) += M;
+            results(3) += M*M;
+            results(4) += abs(M);
+        }
+        
 
         // Saving epsilon in a file called samples.txt
         if (samples == true){
@@ -327,17 +333,18 @@ void IsingModel::estimate_quantites_with_MCMC(int max_cycles, int max_trials,  a
 
     // Total number of spins
     int N = L*L;
-
+    int burn_in = 0;
+    int tot_cycles = max_cycles - burn_in;
     // Compute expectation values
-    double mean_E = results(0)/max_cycles; 
+    double mean_E = results(0)/tot_cycles; 
     double mean_e = mean_E/N;
-    double mean_E2 = results(1)/max_cycles;
+    double mean_E2 = results(1)/tot_cycles;
     double mean_e2 = mean_E2/N;
-    double mean_M = results(2)/max_cycles;
+    double mean_M = results(2)/tot_cycles;
     double mean_m = mean_M/N;
-    double mean_M2 = results(3)/max_cycles;
+    double mean_M2 = results(3)/tot_cycles;
     double mean_m2 = mean_M2/N;
-    double mean_M_abs = results(4)/max_cycles;
+    double mean_M_abs = results(4)/tot_cycles;
     double mean_m_abs = mean_M_abs/N;
 
     // Compute specific heat capacity Cv and magnetic susceptibility X per spin

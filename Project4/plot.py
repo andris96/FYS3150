@@ -6,12 +6,13 @@ import numpy as np
 # an increasing number of Monte Carlo cycles
 # Problem 5 : burn-in time
 ############################################
+
 cycles = np.loadtxt("cycles.txt")
 for T in ["1", "2"]:
     for value in ["e", "m"]:
 
         random = np.loadtxt("T" + T + "R" + "_" + value + "_values.txt")
-        ordered = np.loadtxt("T" + T + "R" + "_" + value + "_values.txt")
+        ordered = np.loadtxt("T" + T + "O" + "_" + value + "_values.txt")
 
         title = "T = 1.0 J/kB" if T=="1" else "T = 2.4 J/kB"
         ylabel = r"<$\epsilon$>" if value=="e" else "<|m|>"
@@ -26,6 +27,30 @@ for T in ["1", "2"]:
         plt.legend()
         plt.savefig(filename)
 
+
+############################################
+# Plotting a histogram containing epsilon
+# samples with T = 1 and T = 2.4
+# Problem 6 : probability distribution
+############################################
+
+samplesT1 = np.loadtxt("samplesT1.txt")
+samplesT2 = np.loadtxt("samplesT2.txt")
+width = 0.001
+
+plt.figure()
+plt.hist(samplesT1, bins = np.arange(min(samplesT1), max(samplesT1) + width, width))
+plt.xlabel("$\epsilon$")
+plt.ylabel("distribution")
+plt.savefig("samplesT1.pdf")
+
+plt.figure()
+plt.hist(samplesT2, bins = np.arange(min(samplesT2), max(samplesT1) + width, width))
+plt.xlabel("$\epsilon$")
+plt.ylabel("distribution")
+plt.savefig("samplesT2.pdf")
+
+
 ############################################
 # Plotting expectation values as function of
 # temperature, for different lattize sizes
@@ -35,7 +60,7 @@ quantities = ["e", "m", "Cv", "X"]
 figures = {qnt : plt.figure() for qnt in quantities}
 axes = {qnt : figures[qnt].add_subplot(1,1,1) for qnt in quantities}
 
-temperatures = np.linspace(2.1, 2.4, 10)
+temperatures = np.linspace(2.1, 2.4, 50)
 for L in ["40", "60", "80", "100"]:
     data = np.loadtxt("expectation_valuesL" + L + ".txt")
     for col, qnt in enumerate(quantities):
