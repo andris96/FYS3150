@@ -10,12 +10,12 @@ cycles = np.loadtxt("cycles.txt")
 for T in ["1", "2"]:
     for value in ["e", "m"]:
 
-        random = np.load("T" + T + "R" + "_" + value + "_values.txt")
-        ordered = np.load("T" + T + "R" + "_" + value + "_values.txt")
+        random = np.loadtxt("T" + T + "R" + "_" + value + "_values.txt")
+        ordered = np.loadtxt("T" + T + "R" + "_" + value + "_values.txt")
 
         title = "T = 1.0 J/kB" if T=="1" else "T = 2.4 J/kB"
         ylabel = r"<$\epsilon$>" if value=="e" else "<|m|>"
-        plot_filename = "plot_burn_in_T" + T + "_" + value +  ".pdf"
+        filename = "plot_burn_in_T" + T + "_" + value +  ".pdf"
 
         plt.figure()
         plt.plot(cycles, ordered, label = "Ordered")
@@ -24,7 +24,7 @@ for T in ["1", "2"]:
         plt.ylabel(ylabel)
         plt.title(title)
         plt.legend()
-        plt.savefig(file_name)
+        plt.savefig(filename)
 
 ############################################
 # Plotting expectation values as function of
@@ -37,7 +37,7 @@ axes = {qnt : figures[qnt].add_subplot(1,1,1) for qnt in quantities}
 
 temperatures = np.linspace(2.1, 2.4, 10)
 for L in ["40", "60", "80", "100"]:
-    data = np.load("expectation_valuesL" + L + ".txt")
+    data = np.loadtxt("expectation_valuesL" + L + ".txt")
     for col, qnt in enumerate(quantities):
         axes[qnt].plot(temperatures, data[:, col], label=f"L={L}")
 
