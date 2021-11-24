@@ -1,49 +1,49 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Load data
-data_burn_in = {
-    "1" : {
-        "R" : {
-            "e" : np.loadtxt("T1R_e_values.txt"),
-            "m" : np.loadtxt("T1R_m_values.txt")
-        },
-        "O" : {
-            "e" : np.loadtxt("T1O_e_values.txt"),
-            "m" : np.loadtxt("T1O_m_values.txt")
-        },
-    }, 
-    "2" : {
-        "R" : {
-            "e" : np.loadtxt("T2R_e_values.txt"),
-            "m" : np.loadtxt("T2R_m_values.txt")
-        },
-        "O" : {
-            "e" : np.loadtxt("T2O_e_values.txt"),
-            "m" : np.loadtxt("T2O_m_values.txt")
-        },
-    } 
-}
-
+############################################
+# Plotting the evolution of <e> and <m> for 
+# an increasing number of Monte Carlo cycles
+# Problem 5 : burn-in time
+############################################
 cycles = np.loadtxt("cycles.txt")
-
-# Plotting the evolution of <e> and <m> for an increasing number of 
-# Monte Carlo cycles, ie. burn-in (Problem)
 for T in ["1", "2"]:
-        for value in ["e", "m"]:
-            title = "T = 1.0 J/kB" if T=="1" else "T = 2.4 J/kB"
-            ylabel = r"<$\epsilon$>" if value=="e" else "<|m|>"
-            file_name = "plot_burn_in_T" + T + "_" + value +  ".pdf"
+    for value in ["e", "m"]:
 
-            plt.figure()
-            plt.plot(cycles, data_burn_in[T]["O"][value], label = "Ordered")
-            plt.plot(cycles, data_burn_in[T]["R"][value], label = "Random")
-            plt.xlabel("Cycles")
-            plt.ylabel(ylabel)
-            plt.title(title)
-            plt.legend()
-            plt.savefig(file_name)
+        random = np.load("T" + T + "R" + "_" + value + "_values.txt")
+        ordered = np.load("T" + T + "R" + "_" + value + "_values.txt")
 
+        title = "T = 1.0 J/kB" if T=="1" else "T = 2.4 J/kB"
+        ylabel = r"<$\epsilon$>" if value=="e" else "<|m|>"
+        plot_filename = "plot_burn_in_T" + T + "_" + value +  ".pdf"
 
+        plt.figure()
+        plt.plot(cycles, ordered, label = "Ordered")
+        plt.plot(cycles, random, label = "Random")
+        plt.xlabel("Cycles")
+        plt.ylabel(ylabel)
+        plt.title(title)
+        plt.legend()
+        plt.savefig(file_name)
 
+############################################
+# Plotting expectation values as function of
+# temperature, for different lattize sizes
+# Problem 8 : phase transitions
+############################################
+quantities = ["e", "m", "Cv", "X"]
+figures = {qnt : plt.figure() for qnt in quantities}
+axes = {qnt : figures[qnt].add_subplot(1,1,1) for qnt in quantities}
 
+temperatures = np.linspace(2.1, 2.4, 10)
+for L in ["40", "60", "80", "100"]:
+    data = np.load("expectation_valuesL" + L + ".txt")
+    for col, qnt in enumerate(quantities):
+        axes[qnt].plot(temperatures, data[:, col], label=f"L={L}")
+
+for qnt in quantities:
+    ylabel = r"<$\epsilon$>" if qnt=="e" else "<" + qnt + ">"
+    axes[qnt].set_xlabel("T")
+    axes[qnt].set_ylabel(ylabel)
+    axes[qnt].legend()
+    figures[qnt].savefig("plot_" + qnt + ".pdf")
