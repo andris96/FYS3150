@@ -282,7 +282,6 @@ void IsingModel::monte_carlo(int max_cycles, int max_trials, arma::vec &results,
         // Search for a lower energy/ higher probability state..
         metropolis(max_trials);
 
-
         // Store the relavant quantities
         // Accounting for burn-in time
         int burn_in = 0;
@@ -294,7 +293,6 @@ void IsingModel::monte_carlo(int max_cycles, int max_trials, arma::vec &results,
             results(4) += abs(M);
         }
         
-
         // Saving epsilon in a file called samples.txt
         if (samples == true){
             int N = L*L;

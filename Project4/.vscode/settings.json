@@ -54,6 +54,9 @@
         "thread": "cpp",
         "cfenv": "cpp",
         "cinttypes": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "armadillo": "cpp",
+        "codecvt": "cpp",
+        "iomanip": "cpp"
     }
 }

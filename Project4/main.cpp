@@ -1,5 +1,6 @@
 #include <IsingModel.hpp>
 #include <TestIsingModel.hpp>
+#include <burn_in.hpp>
 
 #include "omp.h"
 #include <iostream>
@@ -9,7 +10,7 @@
  * In order to run in parallel, add -fopenmp flag when building the program
  * 
  * To build:
- * g++ main.cpp src/IsingModel.cpp src/TestIsingModel.cpp -I include -o main.exe -larmadillo
+ * g++ main.cpp src/IsingModel.cpp src/TestIsingModel.cpp src/burn_in.cpp -I include -o main.exe -larmadillo
  * 
  * To run:
  * ./main.exe
@@ -75,7 +76,6 @@ int main() {
         TestIsingModel analytical;
         arma::rowvec expectation_values = arma::rowvec(4, arma::fill::zeros);
         
-
         L2.estimate_quantites_with_MCMC(max_cycles, max_trials, expectation_values, random, true, false);
 
         // Analytical for 2x2
@@ -91,89 +91,8 @@ int main() {
     // In order to estimate burn-in time. (Problem 5)
     // Plotting is done in a separate python program
     case 2: {
-        // Set parameters
-        double T1 = 1.0;
-        double T2 = 2.4; 
-        int L = 20;
-        int max_trials = 1000;
 
-        // Instantiate
-        IsingModel T1_ordered(L,T1); 
-        IsingModel T1_random(L,T1); 
-        IsingModel T2_ordered(L,T2);
-        IsingModel T2_random(L,T2);
-        
-        // Creating empty files to save data
-        std::ofstream files;
-        files.open("T1O_e_values.txt", std::ofstream::trunc);
-        files.close();
-        files.open("T1R_e_values.txt", std::ofstream::trunc);
-        files.close();
-        files.open("T2O_e_values.txt", std::ofstream::trunc);
-        files.close();
-        files.open("T2R_e_values.txt", std::ofstream::trunc);
-        files.close();
-        files.open("T1O_m_values.txt", std::ofstream::trunc);
-        files.close();
-        files.open("T1R_m_values.txt", std::ofstream::trunc);
-        files.close();
-        files.open("T2O_m_values.txt", std::ofstream::trunc);
-        files.close();
-        files.open("T2R_m_values.txt", std::ofstream::trunc);
-        files.close();
-        files.open("cycles.txt", std::ofstream::trunc);
-        files.close();
-
-        // Defining range of cycles
-        arma::ivec max_cycles = arma::regspace<arma::ivec>(200, 200, 4000);
-        arma::rowvec e = arma::rowvec(5, arma::fill::zeros);
-
-
-        // Saving in a text file
-        files.open("cycles.txt");
-        files << max_cycles << std::endl;
-        files.close();
-
-        
-        bool random = true;
-        bool ordered = false;
-        // Parallelization (build with -fopenmp)
-        auto start = std::chrono::steady_clock::now();
-        #ifdef _OPENMP
-        {
-        // Making max_cycles a local variable
-        #pragma omp parallel private(max_cycles)
-        //had to define max_cycles again for some reason
-        arma::ivec max_cycles = arma::regspace<arma::ivec>(200, 200, 4000); 
-        #pragma omp for
-        for (int i = 0; i < max_cycles.size(); i++){
-            T1_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, ordered, false,
-                                                    true,"T1O_e_values.txt","T1O_m_values.txt" );
-            T1_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, random, false,
-                                                true, "T1R_e_values.txt","T1R_m_values.txt");
-            T2_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, ordered, false,
-                                                    true, "T2O_e_values.txt","T2O_m_values.txt");
-            T2_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, random, false,
-                                                true, "T2R_e_values.txt","T2R_m_values.txt");
-            }
-        }
-        #else
-        {
-        for (int i = 0; i < max_cycles.size(); i++){
-            T1_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, ordered, false,
-                                                    true,"T1O_e_values.txt","T1O_m_values.txt" );
-            T1_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, random, false,
-                                                true, "T1R_e_values.txt","T1R_m_values.txt");
-            T2_ordered.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, ordered, false,
-                                                    true, "T2O_e_values.txt","T2O_m_values.txt");
-            T2_random.estimate_quantites_with_MCMC(max_cycles(i), max_trials, e, random, false,
-                                                true, "T2R_e_values.txt","T2R_m_values.txt");
-            }
-        }
-        #endif
-        auto end = std::chrono::steady_clock::now();
-        std::chrono::duration<double> elapsed_seconds = end-start;
-        std::cout << "Time spent on estimating: " << elapsed_seconds.count() << "s\n";
+        estimate_burn_in(); // See burn_in.cpp for source code
         break;
     }
 
@@ -212,11 +131,10 @@ int main() {
     case 4: {
         int max_cycles = 1000;
         int max_trials = 1000;
-        arma::vec T = arma::linspace(2.1, 2.4, 50);
+        arma::vec T = arma::linspace(2.1, 2.4, 10);
         arma::mat expectation_values(T.size(), 4, arma::fill::zeros);
         arma::rowvec temp(4,arma::fill::zeros);
         
-
         auto start = std::chrono::steady_clock::now();
         for (int L = 40;  L <= 100; L += 20) { 
             #ifdef _OPENMP
