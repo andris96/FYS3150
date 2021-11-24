@@ -1,6 +1,5 @@
 #include <IsingModel.hpp>
 #include <TestIsingModel.hpp>
-#include <burn_in.hpp>
 
 #include "omp.h"
 #include <iostream>
