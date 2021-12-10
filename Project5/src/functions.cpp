@@ -28,12 +28,12 @@ void AB(int M, std::complex<double> h, std::complex<double> dt, arma::cx_mat V, 
     //Calculating the elements of a and b
     for(int i = 0; i < L; i++){
         for(int j = 0; j < L; j++){
-            k = convertk(i,j,M);
-            a(k) = 1. + 4.*r + 1.i * dt/2. * V(i,j);
-            b(k) = 1. - 4.*r - 1.i * dt/2. * V(i,j);
             if (i == j){
+                k = convertk(i,j,M);
                 A(i,j) = a(k);
                 B(i,j) = b(k);
+                a(k) = 1. + 4.*r + 1.i * dt/2. * V(i,j);
+                b(k) = 1. - 4.*r - 1.i * dt/2. * V(i,j);
             }
             }
     }
@@ -69,5 +69,23 @@ void AB(int M, std::complex<double> h, std::complex<double> dt, arma::cx_mat V, 
         B(i,s+i) = r;
         B(s+i,i) = r;
 
+    }
+
+}
+
+std::complex<double> u_init(std::complex<double> x, std::complex<double> y, std::complex<double> xc, std::complex<double> yc, std::complex<double> sx, 
+                        std::complex<double> sy, std::complex<double> px, std::complex<double> py){
+        std::complex<double> dx = x-xc;
+        std::complex<double> dy = y-yc;
+        return std::exp( -(dx*dx)/(2.*sx*sx) - (dy*dy)/(2.*sy*sy) + 1.i*px*dx + 1.i*py*dy);
+    }
+
+
+arma::cx_mat V_config(int slits, std::complex<double> v0, std::complex<double> slitsize){
+    
+    if (slits == 2){
+        // Find the middle of x and y
+        // construct a wall from y=0 to y=1 at x = 0.5
+        // make slits at 0.5+-0.025 that are 0.05 thick
     }
 }
