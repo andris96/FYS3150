@@ -22,14 +22,17 @@ int main()
   
   double dt = 0.01;
   double h = 0.01;
-  arma::mat V(L, L, arma::fill::randu);
+  arma::cx_mat V(L, L, arma::fill::randu);
   arma::cx_mat A(L,L, arma::fill::zeros);
   arma::cx_mat B(L,L, arma::fill::zeros);
 
   AB(M,h,dt,V,A,B);
   
-  std::cout << std::setw(3) << A << std::endl;
-  std::cout << std::setw(3) << B << std::endl;
+  std::cout << std::setw(3) << "real A \n" << arma::real(A) << std::endl;
+  std::cout << std::setw(3) << "imag A \n" << arma::imag(A) << std::endl;
+  std::cout << std::setw(3) << "real B \n" << arma::real(B) << std::endl;
+  std::cout << std::setw(3) << "imag B \n" << arma::imag(B) << std::endl;
+  
   
 
 

@@ -1,11 +1,10 @@
 #include "functions.hpp"
 
 /**
- * Takes indices i and j of a (M-2)x(M-2) matrix and convert them to a corresponding vector index k
+ * Takes indices i and j of a (M-2)^2 x (M-2)^2 matrix and convert them to a corresponding vector index k
 */
 int convertk(int i, int j, int M){
-    //We let K start from 1 and not 0, since j and i start at 1 aswell (We are excluding boundary conditions)
-    return ((M-2)*(j-1) + i);
+    return ((M-2)*(M-2)*j + i);
 }
 
 
@@ -16,13 +15,13 @@ int convertk(int i, int j, int M){
  * Constructs matrices A and B according to the Crank-Nicolson scheme in two dimensions
  * 
 */
-void AB(int M, double h, double dt, arma::mat V, arma::cx_mat &A, arma::cx_mat &B){
+void AB(int M, std::complex<double> h, std::complex<double> dt, arma::cx_mat V, arma::cx_mat &A, arma::cx_mat &B){
 
     int L = (M-2)*(M-2);
-    std::complex<double> r = 1.i*dt/(2*h*h);
+    std::complex<double> r = 1.i*dt/(2.*h*h);
 
-    arma::cx_vec a(L, arma::fill::zeros);
-    arma::cx_vec b(L, arma::fill::zeros);
+    arma::cx_vec a(L*L, arma::fill::zeros);
+    arma::cx_vec b(L*L, arma::fill::zeros);
 
     int k = 0;
 
@@ -32,6 +31,10 @@ void AB(int M, double h, double dt, arma::mat V, arma::cx_mat &A, arma::cx_mat &
             k = convertk(i,j,M);
             a(k) = 1. + 4.*r + 1.i * dt/2. * V(i,j);
             b(k) = 1. - 4.*r - 1.i * dt/2. * V(i,j);
+            if (i == j){
+                A(i,j) = a(k);
+                B(i,j) = b(k);
+            }
             }
     }
 
@@ -48,11 +51,9 @@ void AB(int M, double h, double dt, arma::mat V, arma::cx_mat &A, arma::cx_mat &
 
     // Setting up a tridiagonal matrix
     for(int i=1; i<L-1; i++){
-        A(i, i) = a(i);
         A(i, i-1) = -r; 
         A(i, i+1) = -r;
 
-        B(i, i) = b(i);
         B(i, i-1) = r; 
         B(i, i+1) = r;
     }
@@ -65,9 +66,8 @@ void AB(int M, double h, double dt, arma::mat V, arma::cx_mat &A, arma::cx_mat &
         A(i,s+i) = -r;
         A(s+i,i) = -r;
 
-        B(i,s+i) = -r;
-        B(s+i,i) = -r;
+        B(i,s+i) = r;
+        B(s+i,i) = r;
 
     }
-  
 }
