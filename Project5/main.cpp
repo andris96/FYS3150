@@ -16,7 +16,7 @@
 int main()
 {
 
-  int M = 5;
+  int M = 100;
   int L = (M-2)*(M-2);
   double t = 1;
   double t0 = 0;
@@ -26,9 +26,9 @@ int main()
   double dt = (t-t0)/tsteps;
 
   double h = 0.01;
-  arma::cx_mat V(L, L, arma::fill::zeros);
-  arma::cx_mat A(L,L, arma::fill::zeros);
-  arma::cx_mat B(L,L, arma::fill::zeros);
+  arma::mat V(L, L, arma::fill::zeros);
+  arma::sp_cx_mat A(L,L);
+  arma::sp_cx_mat B(L,L);
 
   AB(M,h,dt,V,A,B);
 
@@ -43,23 +43,18 @@ int main()
   arma::cx_mat u(L,L);
   arma::cx_vec b(L);
 
-  std::complex<double> xc, yc, sx, sy, px, py;
+  double xc, yc, sx, sy, px, py;
   xc = 0.;
   yc = 0.;
   sx = 0.;
   sy = 0.;
   px = 0.;
   py = 0.;
-  for(int i; i < L; i++){
-    u(i) = u_init(x(i), y(i), xc, yc, sx, sy, px, py);
-  }
+  
 
-  arma::normalise(u);
+  
 
-  for(int i = 0; i<tsteps; i++){
-    b = B*u;
-    arma::solve(A,b,u);
-  }
+  
   
 
 

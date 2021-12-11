@@ -15,7 +15,7 @@ int convertk(int i, int j, int M){
  * Constructs matrices A and B according to the Crank-Nicolson scheme in two dimensions
  * 
 */
-void AB(int M, std::complex<double> h, std::complex<double> dt, arma::cx_mat V, arma::cx_mat &A, arma::cx_mat &B){
+void AB(int M, double h, double dt, arma::mat V, arma::sp_cx_mat &A, arma::sp_cx_mat &B){
 
     int L = (M-2)*(M-2);
     std::complex<double> r = 1.i*dt/(2.*h*h);
@@ -35,7 +35,7 @@ void AB(int M, std::complex<double> h, std::complex<double> dt, arma::cx_mat V, 
                 a(k) = 1. + 4.*r + 1.i * dt/2. * V(i,j);
                 b(k) = 1. - 4.*r - 1.i * dt/2. * V(i,j);
             }
-            }
+        }
     }
 
     A(0,0) = a(0);
@@ -73,19 +73,87 @@ void AB(int M, std::complex<double> h, std::complex<double> dt, arma::cx_mat V, 
 
 }
 
-std::complex<double> u_init(std::complex<double> x, std::complex<double> y, std::complex<double> xc, std::complex<double> yc, std::complex<double> sx, 
-                        std::complex<double> sy, std::complex<double> px, std::complex<double> py){
-        std::complex<double> dx = x-xc;
-        std::complex<double> dy = y-yc;
-        return std::exp( -(dx*dx)/(2.*sx*sx) - (dy*dy)/(2.*sy*sy) + 1.i*px*dx + 1.i*py*dy);
+// need to normalise aswell
+arma::cx_vec u_init(arma::vec x, arma::vec y, double xc, double yc, double sx, double sy, double px, double py, int L){
+
+        arma::cx_vec u(L);
+        for(int i; i < L; i++){
+            u(i) = std::exp( -pow(x(i)-xc, 2)/(2.*sx*sx) - pow(y(i)-yc, 2)/(2.*sy*sy) + 1.i*px*(x(i)-xc) + 1.i*py*(y(i)-yc));
+            }
+        return u;
+}
+
+arma::cx_mat vec_to_mat(arma::cx_vec u){
+    int L = u.size();
+    arma::cx_mat U(L,L);
+    int M = L+2;
+    int k = 0;
+    for(int i = 0; i < L; i++){
+        for(int j = 0; j < L; j++){
+            k = convertk(i,j,M);
+            U(i,j) = u(k); 
+        }
     }
+    return U;
+}
 
 
-arma::cx_mat V_config(int slits, std::complex<double> v0, std::complex<double> slitsize){
-    
+arma::mat V_config(int slits, double v0, arma::vec x, arma::vec y){
+    double slitsize = 0.05;
+    double thickness = 0.02;
+    arma::mat V = arma::mat(x.size(), y.size(), arma::fill::zeros);
     if (slits == 2){
-        // Find the middle of x and y
         // construct a wall from y=0 to y=1 at x = 0.5
-        // make slits at 0.5+-0.025 that are 0.05 thick
+        // make slits at 0.5+-0.025 that are 0.02 thick
+        double slit1_beginning = 0.5 - (slitsize/2.) - slitsize;
+        double slit1_end = 0.5 - (slitsize/2.);
+        double slit2_beginning = 0.5 + (slitsize/2.);
+        double slit2_end = 0.5 + (slitsize/2.) + slitsize;
+
+        for(int i = 0; i < x.size(); i++){
+            if ( x(i) > (0.5 - thickness) ){
+                if ( x(i) < (0.5 + thickness)){
+
+                    for(int j = 0; j < y.size(); j++){
+                        V(i,j) = v0;
+                        if(y(j) > slit1_beginning){
+                            if(y(j) < slit1_end){
+                                V(i,j) = 0.0;
+                            }
+                        }
+                        if (y(j) > slit2_beginning){
+                            if(y(j) < slit2_end){
+                                V(i,j) = 0.0;
+                            }
+                        }
+                    }
+                }     
+            }
+        }
+            
+        
     }
+
+    return V;
+}
+
+void simulate(arma::cx_vec u, arma::mat V, double dt, double T, double h){
+    
+    int tsteps = T/dt;
+    int L = u.size();
+    arma::cx_vec b(L);
+    int M = L+2;
+    arma::sp_cx_mat A(L,L);
+    arma::sp_cx_mat B(L,L);
+    arma::cx_cube U_t(L,L,tsteps);
+
+    AB(M,h,dt,V,A,B);
+    
+    for(int i = 0; i<tsteps; i++){
+        b = B*u;
+        u = arma::spsolve(A, b, "lapack");
+        U_t.slice(i) = vec_to_mat(u);
+    }
+    
+    U_t.save("U.bin");
 }

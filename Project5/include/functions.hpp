@@ -2,14 +2,18 @@
 #include <iostream>
 #include <iomanip> 
 #include <complex>
+#include "math.h"
 
 using namespace std::complex_literals;  
 
 int convertk(int i, int j, int M);
 
-void AB(int M, std::complex<double> h, std::complex<double> dt, arma::cx_mat V, arma::cx_mat &A, arma::cx_mat &B);
+void AB(int M, double h, double dt, arma::mat V, arma::sp_cx_mat &A, arma::sp_cx_mat &B);
 
-std::complex<double> u_init(std::complex<double> x, std::complex<double> y, std::complex<double> xc, std::complex<double> yc, 
-                            std::complex<double> sx, std::complex<double> sy, std::complex<double> px, std::complex<double> py);
+arma::cx_vec u_init(arma::vec x, arma::vec y, double xc, double yc, double sx, double sy, double px, double py, int L);
 
-arma::cx_mat V_config(int slits, std::complex<double> v0, std::complex<double> slitsize);
+arma::cx_mat vec_to_mat(arma::cx_vec u);
+
+arma::mat V_config(int slits, double v0, arma::vec x, arma::vec y);
+
+void simulate(arma::cx_vec u, arma::mat V, double dt, double T, double h);
