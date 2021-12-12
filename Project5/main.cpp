@@ -15,56 +15,33 @@
 
 int main()
 {
+ 
+  int M = 201;
+  double h = 1.0/(M-1); 
+  double dt = 2.5E-5;
+  double T = 0.002;
 
-  int M = 100;
-  int L = (M-2)*(M-2);
-  double t = 1;
-  double t0 = 0;
-  int tsteps = 100;
-  int xysteps = 100;
+  arma::vec x, y;
+
+  x = arma::linspace(0,1,M);
+  y = arma::linspace(0,1,M);
   
-  double dt = (t-t0)/tsteps;
-
-  double h = 0.01;
-  arma::mat V(L, L, arma::fill::zeros);
-  arma::sp_cx_mat A(L,L);
-  arma::sp_cx_mat B(L,L);
-
-  AB(M,h,dt,V,A,B);
-
-  arma::vec xy_values = arma::linspace(0,1,xysteps);
-  arma::cx_vec x(L);
-  arma::cx_vec y(L);
-  for(int i; i < L; i++){
-    x(i) = xy_values(i);
-    y(i) = xy_values(i);
-  }
-
-  arma::cx_mat u(L,L);
-  arma::cx_vec b(L);
-
   double xc, yc, sx, sy, px, py;
-  xc = 0.;
-  yc = 0.;
-  sx = 0.;
-  sy = 0.;
-  px = 0.;
-  py = 0.;
-  
+  xc = 0.25;
+  yc = 0.5;
+  sx = 0.05;
+  sy = 0.05;
+  px = 200.0;
+  py = 0.0;
 
-  
+  double v0 = 1.0E10;
 
-  
-  
+  arma::cx_vec u = u_init(x,y,xc,yc,sx,sy,px,py);
+  arma::mat V = V_config(2, v0, x, y);
 
-
-  //std::cout << std::setw(3) << "real A \n" << arma::real(A) << std::endl;
-  //std::cout << std::setw(3) << "imag A \n" << arma::imag(A) << std::endl;
-  //std::cout << std::setw(3) << "real B \n" << arma::real(B) << std::endl;
-  //std::cout << std::setw(3) << "imag B \n" << arma::imag(B) << std::endl;
-
-  
+  //simulate(u,V,dt,T,h);
 
 
-    return 0;
+
+  return 0;
 }
