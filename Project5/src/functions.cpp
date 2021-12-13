@@ -133,6 +133,29 @@ arma::mat V_config(int slits, double v0, arma::vec x, arma::vec y){
     double slitsize = 0.05;
     double thickness = 0.02;
     arma::mat V = arma::mat(x.size(), y.size(), arma::fill::zeros);
+
+    if (slits == 1){
+        // construct a wall from y=0 to y=1 at x = 0.5
+        // make a slit at 0.5 that is 0.02 thick
+        double slit_beginning = 0.5 - (slitsize/2.);
+        double slit_end = 0.5 + (slitsize/2.);
+
+        for(int i = 0; i < x.size(); i++){
+            if ( x(i) > (0.5 - thickness) ){
+                if ( x(i) < (0.5 + thickness)){
+                    for(int j = 0; j < y.size(); j++){
+                        V(i,j) = v0;
+                        if(y(j) > slit_beginning){
+                            if(y(j) < slit_end){
+                                V(i,j) = 0.0;
+                            }
+                        }
+                    }
+                }     
+            }
+        }
+    }
+
     if (slits == 2){
         // construct a wall from y=0 to y=1 at x = 0.5
         // make slits at 0.5+-0.025 that are 0.02 thick
@@ -140,6 +163,37 @@ arma::mat V_config(int slits, double v0, arma::vec x, arma::vec y){
         double slit1_end = 0.5 - (slitsize/2.);
         double slit2_beginning = 0.5 + (slitsize/2.);
         double slit2_end = 0.5 + (slitsize/2.) + slitsize;
+        for(int i = 0; i < x.size(); i++){
+            if ( x(i) > (0.5 - thickness) ){
+                if ( x(i) < (0.5 + thickness)){
+
+                    for(int j = 0; j < y.size(); j++){
+                        V(i,j) = v0;
+                        if(y(j) > slit1_beginning){
+                            if(y(j) < slit1_end){
+                                V(i,j) = 0.0;
+                            }
+                        }
+                        if (y(j) > slit2_beginning){
+                            if(y(j) < slit2_end){
+                                V(i,j) = 0.0;
+                            }
+                        }
+                    }
+                }     
+            }
+        }
+    }
+
+    if (slits == 3){
+        // construct a wall from y=0 to y=1 at x = 0.5
+        // make a slit at 0.5 that is 0.02 thick and two at 0.5+- 0.075
+        double slit1_beginning = 0.5 - (slitsize/2.) - 2.*slitsize;
+        double slit1_end = 0.5 - (slitsize/2.) - slitsize;
+        double slit2_beginning = 0.5 - (slitsize/2.);
+        double slit2_end = 0.5 + (slitsize/2.);
+        double slit3_beginning = 0.5 + (slitsize/2.) + slitsize;
+        double slit3_end = 0.5 + (slitsize/2.) + 2.*slitsize;
 
         for(int i = 0; i < x.size(); i++){
             if ( x(i) > (0.5 - thickness) ){
@@ -154,6 +208,11 @@ arma::mat V_config(int slits, double v0, arma::vec x, arma::vec y){
                         }
                         if (y(j) > slit2_beginning){
                             if(y(j) < slit2_end){
+                                V(i,j) = 0.0;
+                            }
+                        }
+                        if (y(j) > slit3_beginning){
+                            if(y(j) < slit3_end){
                                 V(i,j) = 0.0;
                             }
                         }
