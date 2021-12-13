@@ -12,8 +12,9 @@ void AB(int M, double h, double dt, arma::mat V, arma::sp_cx_mat &A, arma::sp_cx
 
 arma::cx_vec u_init(arma::vec x, arma::vec y, double xc, double yc, double sx, double sy, double px, double py);
 
+arma::cx_vec u_inner_init(arma::vec x, arma::vec y, double xc, double yc, double sx, double sy, double px, double py);
+
 arma::cx_mat vec_to_mat(arma::cx_vec u);
 
 arma::mat V_config(int slits, double v0, arma::vec x, arma::vec y);
 
-void simulate(arma::cx_vec u, arma::mat V, double dt, double T, double h);

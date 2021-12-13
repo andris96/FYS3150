@@ -1,7 +1,7 @@
 #include "functions.hpp"
 
 /**
- * Takes indices i and j of a M^2 x M^2 matrix and convert them to a corresponding vector index k
+ * Takes indices i and j of a M x M matrix and convert them to a corresponding vector index k
 */
 int convertk(int i, int j, int M){
     return (M*j + i);
@@ -16,31 +16,31 @@ int convertk(int i, int j, int M){
 void AB(int M, double h, double dt, arma::mat V, arma::sp_cx_mat &A, arma::sp_cx_mat &B){
     
     int L = pow((M-2),2);
+    int s = M-2;
     std::complex<double> r = 1.i*dt/(2.*h*h);
 
     arma::cx_vec a(L, arma::fill::zeros);
     arma::cx_vec b(L, arma::fill::zeros);
 
-    std::cout << "V = " << V.size() << std::endl;
-    std::cout << L << std::endl;
-    std::cout << A.size() << std::endl;
 
     int k = 0;
 
-    //Calculating the elements of a and b
-    for(int i = 0; i < M-2; i++){
-        for(int j = 0; j < M-2; j++){
-            if (i == j){
-                k = convertk(i,j,M-2);
-                std::cout << k << std::endl;
-                a(k) = 1. + 4.*r + 1.i * dt/2. * V(i,j);
-                b(k) = 1. - 4.*r - 1.i * dt/2. * V(i,j);
-                A(i,j) = a(k);
-                B(i,j) = b(k);
-            }
+    // Calculating the elements of a and b
+    for(int i = 0; i < s; i++){
+        for(int j = 0; j < s; j++){
+            k = convertk(i,j,s);
+            a(k) = 1. + 4.*r + 1.i * dt/2. * V(i,j);
+            b(k) = 1. - 4.*r - 1.i * dt/2. * V(i,j);  
         }
     }
 
+    // Setting the diagonal elements of A and B to a and b 
+    for (int i = 0; i < L; i++){
+        A(i,i) = a(i);
+        B(i,i) = b(i);
+    }
+
+    // Setting up a tridiagonal matrix
     A(0,0) = a(0);
     A(0,1) = -r;
     A(L-1,L-2) = -r;
@@ -51,8 +51,6 @@ void AB(int M, double h, double dt, arma::mat V, arma::sp_cx_mat &A, arma::sp_cx
     B(L-1,L-2) = r;
     B(L-1,L-1) = b(L-1); 
 
-
-    // Setting up a tridiagonal matrix
     for(int i=1; i<L-1; i++){
         A(i, i-1) = -r; 
         A(i, i+1) = -r;
@@ -61,9 +59,17 @@ void AB(int M, double h, double dt, arma::mat V, arma::sp_cx_mat &A, arma::sp_cx
         B(i, i+1) = r;
     }
 
+    // Tridiagonal done, need to set to zero every M-2 element from the upper and lower diagonal, in the case of M = 5, this would be every third element
+    for (int i = s; i < L; i += s ){
+        A(i,i-1) = 0.0;
+        A(i-1,i) = 0.0;
+
+        B(i,i-1) = 0.0;
+        B(i-1,i) = 0.0;
+    }
+
         
     // Setting up the rest r valued elements, these are the ones that goes diagonally directly next to the first submatrix with size (m-2)
-    int s = sqrt(L);
     for(int i = 0; i < (L-s); i++){
         A(i,s+i) = -r;
         A(s+i,i) = -r;
@@ -82,7 +88,7 @@ arma::cx_vec u_init(arma::vec x, arma::vec y, double xc, double yc, double sx, d
     for(int i = 0; i < M; i++){
         for(int j = 0; j < M; j++){
             k = convertk(i,j,M);
-            if( (x(i) == 0.0) || (y(j) == 0.0) ){
+            if( (x(i) == 0.0) || (y(j) == 0.0) || (x(i) == 1.0) || (y(j) == 1.0) ){
                 u(k) = 0.0;
             }
             else {
@@ -94,8 +100,23 @@ arma::cx_vec u_init(arma::vec x, arma::vec y, double xc, double yc, double sx, d
     return u;
 }
 
+// Since problem 4 specified that u_init should include boundaries, we make an almost identical function where the boundaries are excluded
+arma::cx_vec u_inner_init(arma::vec x, arma::vec y, double xc, double yc, double sx, double sy, double px, double py){
+    int s = x.size()-2;
+    int k = 0;
+    arma::cx_vec u(s*s);
+    for(int i = 0; i < s; i++){
+        for(int j = 0; j < s; j++){
+            k = convertk(i,j,s);
+            u(k) = std::exp( -pow(x(i)-xc, 2)/(2.*sx*sx) - pow(y(i)-yc, 2)/(2.*sy*sy) + 1.i*px*(x(i)-xc) + 1.i*py*(y(i)-yc));
+        }
+    }
+    u = arma::normalise(u);
+    return u;
+}
+
 arma::cx_mat vec_to_mat(arma::cx_vec u){
-    int M = u.size();
+    int M = sqrt(u.size());
     arma::cx_mat U(M,M);
     int k = 0;
     for(int i = 0; i < M; i++){
@@ -143,25 +164,4 @@ arma::mat V_config(int slits, double v0, arma::vec x, arma::vec y){
     }
 
     return V;
-}
-
-void simulate(arma::cx_vec u, arma::mat V, double dt, double T, double h){
-    
-    int tsteps = T/dt;
-    int M = u.size();
-    int L = (M-2)*(M-2);
-    arma::cx_vec b(L);
-    arma::sp_cx_mat A(L,L);
-    arma::sp_cx_mat B(L,L);
-    arma::cx_cube U_t(L,L,tsteps);
-
-    AB(M,h,dt,V,A,B);
-    
-    for(int i = 0; i<tsteps; i++){
-        b = B*u;
-        u = arma::spsolve(A, b, "lapack");
-        U_t.slice(i) = vec_to_mat(u);
-    }
-    
-    U_t.save("U.bin");
 }
