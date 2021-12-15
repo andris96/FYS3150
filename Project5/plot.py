@@ -55,9 +55,10 @@ for case, p_sum in enumerate(p_sum_cases):
     plt.plot(t, p_sum)
     plt.xlabel("Time")
     plt.ylabel("Probability")
-    plt.ticklabel_format(axis="x", style="sci", scilimits=(0,0))
+    plt.ticklabel_format(axis="x", style="scientific", scilimits=(0,0))
     plt.title("") # Title or no title?
     plt.savefig(f"p_sum_{case+1}.pdf")
+    plt.close()
 
 
 #####################################################
@@ -100,10 +101,12 @@ for slit in p_data:
 
         plt.plot(y, p_given_x_normalized)
         plt.xlabel("y")
-        plt.ylabel("P", rotation=90)
+        plt.ylabel("P")
         plt.title(f"p(y|x=0.8;t=0.002), {slit}")
         slit = slit.replace(" ", "_")
+        plt.tight_layout()
         plt.savefig(f"1D_prob_dist_{slit}.pdf")
+        plt.close()
 
 #####################################################
 # Problem X
