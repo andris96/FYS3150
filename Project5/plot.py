@@ -103,7 +103,8 @@ for slit in ps:
         plt.xlabel("y")
         plt.ylabel("P", rotation=90)
         plt.title(f"p(y|x=0.8;t=0.002), {slit}")
-        plt.savefig(f"1D_prob_dist_{slit.replace(" ", "_")}.pdf")
+        slit = slit.replace(" ", "_")
+        plt.savefig(f"1D_prob_dist_{slit}.pdf")
 
 #####################################################
 # Problem X
