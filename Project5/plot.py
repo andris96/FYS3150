@@ -76,7 +76,9 @@ data = {"p" : p_double, "U_real" : U_real, "U_img" : U_img}
 
 for t_idx in [0, tsteps//2, -1]:
     for quantity in data:
-        heatmap2D(z=data[quantity][t_idx, :, :],
+        z = data[quantity][t_idx, :, :]
+        z = np.flip(z, axis=1)
+        heatmap2D(z,
                   xmin=x.min(), xmax=x.max(), 
                   ymin=y.min(), ymax=y.max(),
                   filename=f"heatmap_{quantity}_{t_idx}", 
@@ -97,7 +99,7 @@ for slit in p_data:
     if p_data[slit] is not None: # remove this if-condition when p_single.bin and p_triple.bin are valid files
         x_idx = int(0.8 / ((1 - 0) / M))
         p_given_x = p_data[slit][-1, :, x_idx] # p(y|x=0.8;t=0.002), t=0.002 eqv. to last time idx
-        p_given_x_normalized = p_given_x / np.linalg.norm(p_given_x, ord=1)
+        p_given_x_normalized = np.abs(p_given_x / np.linalg.norm(p_given_x, ord=1))
 
         plt.plot(y, p_given_x_normalized)
         plt.xlabel("y")
