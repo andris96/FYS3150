@@ -49,8 +49,7 @@ x, y = np.meshgrid(x_points, y_points, sparse=True)
 # Case 1 : no slit barrier
 # Case 2 : double-slit barrier
 #####################################################
-p_sum_cases = [np.fromfile("p_sum.bin")]
-#p_sum_cases = [np.fromfile("p_sum_case1.bin"), np.fromfile("p_sum_case2.bin")]
+p_sum_cases = [np.fromfile("p_sum0.bin"), np.fromfile("p_sum2.bin")]
 t = np.linspace(0, T ,tsteps)
 for case, p_sum in enumerate(p_sum_cases):
     plt.plot(t, p_sum)
@@ -68,11 +67,11 @@ for case, p_sum in enumerate(p_sum_cases):
 # the 2D probability function p^n, as well as for 
 # Re(U) and Im(U), for times t=0, t=0.001 and t=0.002
 #####################################################
-p = np.fromfile("p.bin").reshape(tsteps, M, M)
+p_double = np.fromfile("p2.bin").reshape(tsteps, M, M)
 U_real = np.fromfile("U_real.bin").reshape(tsteps, M, M)
 U_img = np.fromfile("U_imag.bin").reshape(tsteps, M, M)
 
-data = {"p" : p, "U_real" : U_real, "U_img" : U_img}
+data = {"p" : p_double, "U_real" : U_real, "U_img" : U_img}
 
 for t_idx in [0, tsteps//2, -1]:
     for quantity in data:
@@ -89,14 +88,14 @@ for t_idx in [0, tsteps//2, -1]:
 # Plot of the (normalized) probability distribution
 # at x=0.8 for time t=0.002
 #####################################################
-p_single = None #np.fromfile("p_single.bin").reshape(tsteps, M, M)
-p_triple = None #np.fromfile("p_trippel.bin").reshape(tsteps, M, M)
-ps = {"single slit" : p_single, "double slit" : p, "triple slit" : p_triple}
+p_single = np.fromfile("p1.bin").reshape(tsteps, M, M)
+p_triple = np.fromfile("p3.bin").reshape(tsteps, M, M)
+p_data = {"single slit" : p_single, "double slit" : p_double, "triple slit" : p_triple}
 
-for slit in ps:
-    if ps[slit] is not None: # remove this if-condition when p_single.bin and p_triple.bin are valid files
+for slit in p_data:
+    if p_data[slit] is not None: # remove this if-condition when p_single.bin and p_triple.bin are valid files
         x_idx = int(0.8 / ((1 - 0) / M))
-        p_given_x = ps[slit][-1, :, x_idx] # p(y|x=0.8;t=0.002), t=0.002 eqv. to last time idx
+        p_given_x = p_data[slit][-1, :, x_idx] # p(y|x=0.8;t=0.002), t=0.002 eqv. to last time idx
         p_given_x_normalized = p_given_x / np.linalg.norm(p_given_x, ord=1)
 
         plt.plot(y, p_given_x_normalized)

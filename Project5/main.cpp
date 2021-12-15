@@ -43,7 +43,7 @@ int main()
   
 
   arma::cx_vec u = u_init(x,y,xc,yc,sx,sy,px,py);
-  arma::mat V = V_config(2, v0, x, y);
+  // arma::mat V = V_config(2, v0, x, y);
   arma::cx_mat U = vec_to_mat(u);
   arma::cx_vec u_inner = u_inner_init(x,y,xc,yc,sx,sy,px,py);
   arma::cx_mat U_inner = U.submat(1,1,M-2,M-2);
@@ -55,47 +55,43 @@ int main()
   arma::vec p_sum(tsteps);
   
 
-  AB(M,h,dt,V,A,B);
+  // Simulating for zero, single, double and triple slit
+  arma::mat V;
+  for (int slit = 0; slit <= 3; slit++) {
 
+    V = V_config(slit, v0, x, y);
+    AB(M,h,dt,V,A,B);
 
-  for(int i = 0; i<tsteps; i++){
-    b = B*u_inner;
-    u_inner = arma::spsolve(A, b);
-    U_inner = vec_to_mat(u_inner);
-    U.submat(1,1,M-2,M-2) = U_inner;
-    U_t.slice(i) = U;
-    p.slice(i) = arma::real(arma::conj(U)*U);
-    p_sum(i) = norm(U);
+    for(int i = 0; i < tsteps; i++){
+      b = B*u_inner;
+      u_inner = arma::spsolve(A, b);
+      U_inner = vec_to_mat(u_inner);
+      U.submat(1,1,M-2,M-2) = U_inner;
+      U_t.slice(i) = U;
+      p.slice(i) = arma::real(arma::conj(U)*U);
+      p_sum(i) = norm(U);
+    }
+  
+    arma::cube U_real = arma::real(U_t);
+    arma::cube U_imag = arma::real(U_t);
+
+    // Saving quantities
+    // Double slit: all quantities
+    // Zero slit : only p_sum
+    // Single and triple slit : only p
+    if (slit != 0) {
+      p.save("p" + std::to_string(slit) + ".bin", arma::raw_binary);
+    }
+    if ((slit == 0) || (slit == 2)){
+      p_sum.save("p_sum" + std::to_string(slit) + ".bin", arma::raw_binary);
+
+      if (slit == 2) {
+        U_t.save("U.bin", arma::raw_binary);
+        U_real.save("U_real.bin", arma::raw_binary);
+        U_imag.save("U_imag.bin", arma::raw_binary);
+      }
+    }
   }
- 
-  arma::cube U_real = arma::real(U_t);
-  arma::cube U_imag = arma::real(U_t);
-
-  p.save("p.bin", arma::raw_binary);
-  p_sum.save("p_sum.bin", arma::raw_binary);
-  U_t.save("U.bin", arma::raw_binary);
-  U_real.save("U_real.bin", arma::raw_binary);
-  U_imag.save("U_imag.bin", arma::raw_binary);
-
-  // Problem 9
-  // Finding the index where x = 0.8
-
-  int i = 0;
-  double index_x;
-  while(x(i) < 0.8){
-    index_x = i;
-    i++;
-  }
-
-  arma::mat p_at_T = p.slice(tsteps-1);
-  arma::vec p_given_x = p_at_T.col(index_x);
-
-  arma::vec p_given_x_normalised = arma::normalise(p_given_x);
-
-  p_given_x_normalised.save("p_given_x.bin", arma::raw_binary);
-
-
-
 
   return 0;
 }
